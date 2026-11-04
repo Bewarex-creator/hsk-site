@@ -120,6 +120,18 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   .header, .setup, .quiz, .bottom-panel { position:relative; z-index:3; }
+
+  .fade-in {
+    opacity:0; transform:translateY(14px); filter:blur(6px);
+    transition:opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .8s ease;
+  }
+  .fade-in.visible { opacity:1; transform:translateY(0); filter:blur(0); }
+  .cat-btn {
+    opacity:0; transform:translateY(8px) scale(.95);
+    transition:opacity .5s ease, transform .5s cubic-bezier(.34,1.4,.64,1),
+      background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .cat-btn.shown { opacity:1; transform:translateY(0) scale(1); }
   .header { text-align:center; display:flex; align-items:center; gap:14px; }
   .seal {
     width:34px; height:34px; flex:0 0 auto;
@@ -467,7 +479,7 @@
     </div>
   </div>
 
-  <div class="setup" id="setup">
+  <div class="setup fade-in" id="setup">
     <div class="setup-title">Выбери категории — можно несколько сразу</div>
     <div class="cat-grid" id="catGrid"></div>
     <div class="setup-actions">
@@ -492,7 +504,7 @@
     <div class="detail" id="detail"></div>
   </div>
 
-  <div class="bottom-panel">
+  <div class="bottom-panel fade-in">
     <a class="back-home" href="index.html">
       <span class="arrow">←</span>
       <span>На главную</span>
@@ -856,6 +868,29 @@ if (window.parent !== window) {
 
 buildCats();
 updateHint();
+
+// ===== Гладкое каскадное появление (как на карточках и текстах) =====
+document.querySelectorAll('.fade-in').forEach((el, i) => {
+  setTimeout(() => el.classList.add('visible'), 140 * i + 100);
+});
+// Чипы категорий появляются волной после панели
+function revealCats() {
+  const btns = document.querySelectorAll('.cat-btn');
+  btns.forEach((btn, i) => {
+    setTimeout(() => btn.classList.add('shown'), 600 + 60 * i);
+  });
+  setTimeout(() => { catsRevealed = true; }, 600 + 60 * btns.length + 600);
+}
+let catsRevealed = false;
+revealCats();
+// При перестройке фильтров (выбор/сброс) чипы уже показаны
+const origBuildCats = buildCats;
+buildCats = function() {
+  origBuildCats();
+  if (catsRevealed) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.add('shown'));
+  }
+};
 </script>
 </body>
 </html>
