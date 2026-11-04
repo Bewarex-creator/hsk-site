@@ -270,10 +270,24 @@
 }
 .music-btn.playing .icon-off { display:none; }
 .music-btn:not(.playing) .icon-on { display:none; }
+
+/* ===== Оболочка для непрерывной музыки ===== */
+.app-frame {
+  position:fixed; inset:0; z-index:50;
+  background:#100d0b;
+  border:none;
+  width:100%; height:100%;
+  display:none;
+}
+.app-frame.open { display:block; }
+.music-btn { z-index:120; }
+
 </style>
 </head>
 <body>
 
+  <iframe class="app-frame" id="appFrame" title="Приложение"></iframe>
+  <div class="site-content" id="siteContent">
   <div class="layer ink-wash"></div>
   <div class="sun"></div>
 
@@ -430,5 +444,37 @@ for (var k = 0; k < els.length; k++) {
 })();
 </script>
 
+<script>
+// ===== Оболочка: открытие страниц в iframe без перезапуска музыки =====
+(function(){
+  const frame = document.getElementById('appFrame');
+  const content = document.getElementById('siteContent');
+  const audio = document.getElementById('bgMusic');
+  const btn = document.getElementById('musicBtn');
+
+  function openApp(url){
+    frame.src = url;
+    frame.classList.add('open');
+    content.style.display = 'none';
+    // Музыка продолжает играть, т.к. audio живёт в родительском документе
+  }
+  function closeApp(){
+    frame.classList.remove('open');
+    frame.src = 'about:blank';
+    content.style.display = '';
+  }
+
+  document.querySelectorAll('a.gate').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      openApp(a.getAttribute('href'));
+    });
+  });
+
+  window.addEventListener('message', (e) => {
+    if (e.data === 'close-app') closeApp();
+  });
+})();
+</script>
 </body>
 </html>

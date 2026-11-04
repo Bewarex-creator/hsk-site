@@ -871,5 +871,19 @@ generate();
 })();
 </script>
 
+<script>
+// Возврат на главную без перезагрузки (оболочка)
+if (window.parent !== window) {
+  // Внутри оболочки: прячем дубли кнопки музыки и свой аудио-элемент
+  const dupBtn = document.getElementById('musicBtn');
+  if (dupBtn) dupBtn.style.display = 'none';
+  const dupAudio = document.getElementById('bgMusic');
+  if (dupAudio) dupAudio.remove();
+  document.querySelector('.back-home')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.parent.postMessage('close-app', '*');
+  });
+}
+</script>
 </body>
 </html>
