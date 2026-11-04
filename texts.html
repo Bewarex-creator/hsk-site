@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тексты — 汉语学习</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+
+  body {
+    min-height:100vh;
+    background:#0b1013;
+    font-family:'Cormorant Garamond','Segoe UI',serif;
+    color:#dce6e2;
+    display:flex; flex-direction:column;
+    align-items:center;
+    padding:26px 16px 34px;
+    gap:16px;
+    position:relative;
+  }
+
+  .layer { position:absolute; inset:0; pointer-events:none; }
+
+  /* Ночная нефритовая река: холодный контраст главной */
+  .mist {
+    background:
+      radial-gradient(ellipse 55% 45% at 50% 0%, rgba(110,220,175,.09) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 10% 100%, rgba(38,84,74,.14) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 90% 100%, rgba(30,58,82,.16) 0%, transparent 70%);
+  }
+
+  #fireflies {
+    position:absolute; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:2;
+  }
+
+  .grain {
+    z-index:4; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .header, .panel, .text-card, .meta, .back-home { position:relative; z-index:3; }
+
+  /* ===== Декоративные детали ===== */
+
+  /* Луна за свитком */
+  .moon-glow {
+    position:absolute;
+    width:clamp(240px, 34vw, 420px);
+    height:clamp(240px, 34vw, 420px);
+    left:50%; top:38%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    z-index:0;
+    pointer-events:none;
+    background:radial-gradient(circle at 45% 42%, rgba(110,220,175,.16) 0%, rgba(60,140,110,.08) 48%, transparent 72%);
+    filter:blur(3px);
+    animation:moonBreathe 14s ease-in-out infinite alternate;
+  }
+  .moon-glow::after {
+    content:''; position:absolute; inset:-8%;
+    border-radius:50%;
+    border:1px solid rgba(110,220,175,.16);
+    -webkit-mask-image:conic-gradient(from 200deg, #000 0deg, #000 275deg, transparent 315deg, transparent 360deg);
+            mask-image:conic-gradient(from 200deg, #000 0deg, #000 275deg, transparent 315deg, transparent 360deg);
+    animation:moonRing 80s linear infinite;
+  }
+  @keyframes moonBreathe {
+    from { opacity:.7; transform:translate(-50%,-50%) scale(1); }
+    to   { opacity:1; transform:translate(-50%,-48%) scale(1.06); }
+  }
+  @keyframes moonRing { to { transform:rotate(360deg); } }
+
+  /* Стебли бамбука по бокам */
+  .bamboo {
+    position:absolute;
+    bottom:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:.5;
+  }
+  .bamboo.left { left:clamp(6px, 3vw, 60px); width:clamp(50px, 7vw, 90px); }
+  .bamboo.right { right:clamp(6px, 3vw, 60px); width:clamp(50px, 7vw, 90px); transform:scaleX(-1); }
+  .bamboo svg { display:block; }
+  .bamboo .sway { animation:bambooSway 11s ease-in-out infinite alternate; transform-origin:50% 100%; }
+  .bamboo.right .sway { animation-duration:13s; }
+  @keyframes bambooSway {
+    from { transform:rotate(-1deg); }
+    to   { transform:rotate(1.4deg); }
+  }
+
+  /* Туманная река внизу */
+  .river-mist {
+    position:absolute;
+    left:-5%; right:-5%;
+    bottom:0;
+    height:24vh;
+    z-index:0;
+    pointer-events:none;
+    background:linear-gradient(to top, rgba(110,220,175,.07) 0%, transparent 88%);
+    filter:blur(10px);
+    animation:riverDrift 22s ease-in-out infinite alternate;
+  }
+  @keyframes riverDrift {
+    from { transform:translateX(-2%); opacity:.7; }
+    to   { transform:translateX(2%); opacity:1; }
+  }
+
+  /* Печать в шапке */
+  .header-seal {
+    width:40px; height:40px;
+    background:linear-gradient(150deg,#1d5c45,#12402f);
+    border-radius:5px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif SC',serif; font-weight:600;
+    font-size:1.1rem; color:#d8efe4;
+    box-shadow:0 4px 16px rgba(29,92,69,.4), inset 0 0 0 1.5px rgba(216,239,228,.25), inset 0 0 0 4px rgba(29,92,69,.9);
+    transform:rotate(-3deg);
+    margin:0 auto 10px;
+  }
+
+  /* Вертикальная строка у бамбука */
+  .side-phrase {
+    position:absolute;
+    top:50%; transform:translateY(-50%);
+    writing-mode:vertical-rl;
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(.85rem, 1.5vh, 1.05rem);
+    letter-spacing:.5em;
+    color:rgba(110,220,175,.3);
+    z-index:2;
+    user-select:none;
+    pointer-events:none;
+  }
+  .side-phrase.left { left:clamp(70px, 10vw, 170px); }
+  .side-phrase.right { right:clamp(70px, 10vw, 170px); color:rgba(201,185,138,.28); }
+
+  .header { text-align:center; }
+  .header h1 {
+    font-size:clamp(1.9em, 4.5vw, 2.4em);
+    font-weight:600; letter-spacing:.3em;
+    font-family:'Noto Serif SC',serif;
+    color:#e7f2ec;
+    margin-left:.3em;
+  }
+  .header .sub {
+    color:#7fa89a; font-size:.95em; font-style:italic;
+    letter-spacing:.08em; margin-top:4px;
+  }
+  .header .divider {
+    display:flex; align-items:center; gap:12px;
+    margin:14px auto 0;
+    width:min(300px, 60vw);
+  }
+  .header .divider::before, .header .divider::after {
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(110,220,175,.45));
+  }
+  .header .divider::after { background:linear-gradient(90deg, rgba(110,220,175,.45), transparent); }
+  .header .divider .gem {
+    width:6px; height:6px;
+    background:#6edcaf;
+    transform:rotate(45deg);
+    box-shadow:0 0 10px rgba(110,220,175,.7);
+  }
+
+  .panel {
+    display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center;
+    padding:12px 20px;
+    background:linear-gradient(160deg,rgba(14,22,26,.55),rgba(10,16,20,.65));
+    border:1px solid rgba(110,220,175,.16);
+    border-radius:4px;
+    backdrop-filter:blur(8px);
+    box-shadow:0 8px 26px rgba(0,0,0,.3);
+  }
+  .btn {
+    background:transparent;
+    color:#8fceae;
+    border:1px solid rgba(110,220,175,.35);
+    border-radius:2px;
+    padding:10px 20px;
+    font-size:.92em; font-weight:500;
+    letter-spacing:.05em;
+    font-family:inherit; cursor:pointer;
+    transition:all .25s ease;
+  }
+  .btn:hover {
+    color:#eafcf2;
+    border-color:#6edcaf;
+    background:rgba(110,220,175,.07);
+    box-shadow:0 4px 16px rgba(0,0,0,.3);
+  }
+  .btn:active { transform:translateY(1px); }
+  .btn.gold { color:#c9b98a; border-color:rgba(201,185,138,.35); }
+  .btn.gold:hover { border-color:#c9b98a; background:rgba(201,185,138,.07); }
+  /* ===== Сегмент-переключатель длины текста ===== */
+  .seg {
+    display:flex;
+    background:rgba(12,20,24,.7);
+    border:1px solid rgba(110,220,175,.25);
+    border-radius:2px;
+    padding:3px;
+    gap:2px;
+  }
+  .seg-btn {
+    background:transparent;
+    color:#7fa89a;
+    border:none;
+    border-radius:1px;
+    padding:8px 14px;
+    font-family:inherit;
+    font-size:.86em;
+    letter-spacing:.04em;
+    cursor:pointer;
+    transition:all .25s ease;
+    white-space:nowrap;
+  }
+  .seg-btn:hover { color:#dce6e2; background:rgba(110,220,175,.07); }
+  .seg-btn.active {
+    background:linear-gradient(150deg,rgba(110,220,175,.18),rgba(110,220,175,.10));
+    color:#6edcaf;
+    box-shadow:inset 0 0 0 1px rgba(110,220,175,.35);
+  }
+
+  /* ===== Текст-картина: свиток с вертикальной заставкой ===== */
+  .text-card {
+    width:min(700px, 94vw);
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(110,220,175,.05) 0%, transparent 70%),
+      linear-gradient(170deg,#12191c,#0d1114 70%);
+    border:1px solid rgba(110,220,175,.2);
+    border-radius:4px;
+    padding:34px 34px 28px;
+    box-shadow:0 18px 50px rgba(0,0,0,.5);
+    position:relative;
+  }
+  .text-card::after {
+    content:''; position:absolute; inset:7px;
+    border:1px solid rgba(110,220,175,.18);
+    border-radius:2px;
+    pointer-events:none;
+  }
+  /* Уголки-скобки нефритом */
+  .text-card::before {
+    content:''; position:absolute; inset:0;
+    pointer-events:none; z-index:2;
+    background:
+      linear-gradient(135deg, rgba(110,220,175,.55) 1.5px, transparent 1.5px) top left / 15px 15px no-repeat,
+      linear-gradient(225deg, rgba(110,220,175,.55) 1.5px, transparent 1.5px) top right / 15px 15px no-repeat,
+      linear-gradient(45deg, rgba(110,220,175,.55) 1.5px, transparent 1.5px) bottom left / 15px 15px no-repeat,
+      linear-gradient(315deg, rgba(110,220,175,.55) 1.5px, transparent 1.5px) bottom right / 15px 15px no-repeat;
+  }
+  /* Скрыть вторую печать 读 внутри карточки (дубль шапки) */
+  .text-card .scroll-seal { display:none; }
+  /* Заставка: нефритовая печать сверху */
+  .text-card .scroll-seal {
+    position:absolute; top:14px; right:16px;
+    font-family:'Noto Serif SC',serif;
+    font-size:.8em; letter-spacing:.2em;
+    color:#6edcaf;
+    border:1px solid rgba(110,220,175,.3);
+    padding:3px 9px;
+    background:rgba(12,20,24,.6);
+  }
+
+  .text-card .zh {
+    font-size:1.42em;
+    line-height:2.1;
+    font-family:'Noto Serif SC',serif;
+    color:#eef7f1;
+    text-align:center;
+    letter-spacing:.06em;
+  }
+  .text-card .zh .word {
+    cursor:pointer;
+    border-bottom:1px solid rgba(110,220,175,.45);
+    transition:color .2s, border-color .2s, background .2s;
+    padding:0 2px;
+  }
+  .text-card .zh .word:hover { color:#6edcaf; border-color:#6edcaf; background:rgba(110,220,175,.06); }
+
+  .word-pop {
+    margin-top:20px;
+    background:rgba(12,20,24,.7);
+    border:1px solid rgba(110,220,175,.22);
+    border-radius:2px;
+    padding:14px 20px;
+    text-align:center;
+    display:none;
+  }
+  .word-pop.show { display:block; animation:popIn .35s cubic-bezier(.34,1.4,.64,1); }
+  @keyframes popIn {
+    from { opacity:0; transform:scale(.94); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  .word-pop .wp-hanzi { font-size:1.9em; color:#6edcaf; font-family:'Noto Serif SC',serif; }
+  .word-pop .wp-pinyin { color:#c9b98a; margin-top:3px; font-style:italic; }
+  .word-pop .wp-tr { color:#dce6e2; margin-top:5px; }
+
+  .text-card .ru {
+    margin-top:20px;
+    padding-top:16px;
+    border-top:1px dashed rgba(110,220,175,.25);
+    color:#aebfb7;
+    line-height:1.75;
+    font-style:italic;
+    font-size:1.02em;
+  }
+  .meta {
+    text-align:center; color:#5f7a70; font-size:.82em; font-style:italic;
+    display:flex; align-items:center; gap:10px; justify-content:center;
+  }
+  .meta::before, .meta::after {
+    content:''; width:34px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(110,220,175,.4));
+  }
+  .meta::after { background:linear-gradient(90deg, rgba(110,220,175,.4), transparent); }
+
+  /* ===== Возврат: нефритовая нить ===== */
+  .back-home {
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none;
+    color:#8fa89d;
+    font-size:.9em;
+    letter-spacing:.06em;
+    padding:9px 18px;
+    border:1px solid rgba(143,168,157,.3);
+    border-radius:2px;
+    transition:all .25s ease;
+  }
+  .back-home:hover { color:#eafcf2; border-color:rgba(110,220,175,.5); }
+  .back-home .arrow { color:#6edcaf; transition:transform .25s ease; display:inline-block; }
+  .back-home:hover .arrow { transform:translateX(-4px); }
+
+  .fade-in {
+    opacity:0; transform:translateY(14px); filter:blur(6px);
+    transition:opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .8s ease;
+  }
+  .fade-in.visible { opacity:1; transform:translateY(0); filter:blur(0); }
+</style>
+</head>
+<body>
+  <div class="layer mist"></div>
+  <canvas id="fireflies"></canvas>
+  <div class="layer grain"></div>
+
+  <!-- Луна -->
+  <div class="moon-glow"></div>
+
+  <!-- Речной туман -->
+  <div class="river-mist"></div>
+
+  <!-- Бамбук слева -->
+  <div class="bamboo left">
+    <div class="sway">
+      <svg width="100%" viewBox="0 0 90 420" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="bInk" x="-15%" y="-15%" width="130%" height="130%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="3" seed="6" result="bn"/>
+            <feDisplacementMap in="SourceGraphic" in2="bn" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+        <g filter="url(#bInk)">
+          <!-- ствол: сегменты -->
+          <rect x="38" y="60" width="12" height="80" rx="4" fill="rgba(62,110,80,.75)"/>
+          <rect x="37" y="144" width="14" height="86" rx="4" fill="rgba(54,98,70,.8)"/>
+          <rect x="38" y="234" width="12" height="82" rx="4" fill="rgba(62,110,80,.75)"/>
+          <rect x="37" y="320" width="14" height="100" rx="4" fill="rgba(50,92,66,.8)"/>
+          <!-- перетяжки между сегментами -->
+          <line x1="36" y1="142" x2="52" y2="142" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <line x1="36" y1="232" x2="52" y2="232" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <line x1="36" y1="318" x2="52" y2="318" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <!-- веточки с листьями -->
+          <path d="M50 150 Q 70 140 84 128" stroke="rgba(46,84,60,.7)" stroke-width="2" fill="none"/>
+          <path d="M50 240 Q 72 234 88 222" stroke="rgba(46,84,60,.7)" stroke-width="2" fill="none"/>
+          <path d="M38 160 Q 20 150 8 138" stroke="rgba(46,84,60,.65)" stroke-width="1.8" fill="none"/>
+          <!-- листья: акварельные мазки -->
+          <ellipse cx="82" cy="124" rx="14" ry="4" transform="rotate(-38 82 124)" fill="rgba(72,124,88,.7)"/>
+          <ellipse cx="74" cy="118" rx="12" ry="3.6" transform="rotate(-18 74 118)" fill="rgba(88,142,100,.65)"/>
+          <ellipse cx="86" cy="218" rx="14" ry="4" transform="rotate(-34 86 218)" fill="rgba(72,124,88,.7)"/>
+          <ellipse cx="78" cy="212" rx="11" ry="3.4" transform="rotate(-14 78 212)" fill="rgba(88,142,100,.6)"/>
+          <ellipse cx="10" cy="134" rx="12" ry="3.6" transform="rotate(28 10 134)" fill="rgba(72,124,88,.6)"/>
+          <ellipse cx="20" cy="142" rx="10" ry="3" transform="rotate(8 20 142)" fill="rgba(88,142,100,.55)"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Бамбук справа -->
+  <div class="bamboo right">
+    <div class="sway">
+      <svg width="100%" viewBox="0 0 90 420" xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#bInk)">
+          <rect x="38" y="80" width="12" height="86" rx="4" fill="rgba(62,110,80,.72)"/>
+          <rect x="37" y="170" width="14" height="90" rx="4" fill="rgba(54,98,70,.78)"/>
+          <rect x="38" y="264" width="12" height="80" rx="4" fill="rgba(62,110,80,.72)"/>
+          <rect x="37" y="348" width="14" height="72" rx="4" fill="rgba(50,92,66,.78)"/>
+          <line x1="36" y1="168" x2="52" y2="168" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <line x1="36" y1="262" x2="52" y2="262" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <line x1="36" y1="346" x2="52" y2="346" stroke="rgba(30,56,40,.8)" stroke-width="2.4"/>
+          <path d="M50 180 Q 72 172 86 158" stroke="rgba(46,84,60,.7)" stroke-width="2" fill="none"/>
+          <path d="M38 280 Q 22 270 10 256" stroke="rgba(46,84,60,.65)" stroke-width="1.8" fill="none"/>
+          <ellipse cx="84" cy="154" rx="14" ry="4" transform="rotate(-36 84 154)" fill="rgba(72,124,88,.7)"/>
+          <ellipse cx="76" cy="148" rx="11" ry="3.4" transform="rotate(-16 76 148)" fill="rgba(88,142,100,.6)"/>
+          <ellipse cx="12" cy="252" rx="12" ry="3.6" transform="rotate(26 12 252)" fill="rgba(72,124,88,.6)"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Вертикальные строки -->
+  <div class="side-phrase left">读书破万卷</div>
+  <div class="side-phrase right">笔下如有神</div>
+  <div class="header fade-in">
+    <div class="header-seal">读</div>
+    <h1>阅读练习</h1>
+    <div class="sub">Генератор связных текстов из слов HSK 1</div>
+    <div class="divider"><span class="gem"></span></div>
+  </div>
+
+  <div class="panel fade-in">
+    <button class="btn" id="genBtn">✨ Сгенерировать текст</button>
+    <button class="btn gold" id="toggleRu">👁 Показать перевод</button>
+    <div class="seg" id="lenSeg" role="group" aria-label="Длина текста">
+      <button class="seg-btn" data-val="short" type="button">Короткий</button>
+      <button class="seg-btn active" data-val="medium" type="button">Средний</button>
+      <button class="seg-btn" data-val="long" type="button">Длинный</button>
+    </div>
+  </div>
+
+  <div class="text-card fade-in" id="textCard">
+    <div class="scroll-seal">读</div>
+    <div class="zh" id="zhText"></div>
+    <div class="word-pop" id="wordPop">
+      <div class="wp-hanzi"></div>
+      <div class="wp-pinyin"></div>
+      <div class="wp-tr"></div>
+    </div>
+    <div class="ru" id="ruText" style="display:none"></div>
+  </div>
+  <div class="meta fade-in" id="meta"></div>
+
+    <a class="back-home fade-in" href="index.html">
+    <span class="arrow">←</span> На главную
+  </a>
+
+<script>
+// ===== Словарь HSK 1 =====
+const VOC = {
+  names: [
+    { h:'小明', p:'Xiǎomíng', t:'Сяомин' },
+    { h:'小红', p:'Xiǎohóng', t:'Сяохун' },
+    { h:'爸爸', p:'bàba', t:'папа' },
+    { h:'妈妈', p:'māma', t:'мама' },
+    { h:'儿子', p:'érzi', t:'сын' },
+    { h:'女儿', p:'nǚér', t:'дочь' },
+    { h:'朋友', p:'péngyou', t:'друг' },
+    { h:'老师', p:'lǎoshī', t:'учитель' },
+    { h:'同学', p:'tóngxué', t:'одноклассник' },
+    { h:'医生', p:'yīshēng', t:'врач' },
+    { h:'学生', p:'xuésheng', t:'студент' },
+  ],
+  i:     [ { h:'我', p:'wǒ', t:'я' } ],
+  you:   [ { h:'你', p:'nǐ', t:'ты' } ],
+  he:    [ { h:'他', p:'tā', t:'он' } ],
+  she:   [ { h:'她', p:'tā', t:'она' } ],
+  we:    [ { h:'我们', p:'wǒmen', t:'мы' } ],
+  actions: [
+    { h:'吃', p:'chī', t:'есть' }, { h:'喝', p:'hē', t:'пить' },
+    { h:'买', p:'mǎi', t:'покупать' }, { h:'看', p:'kàn', t:'смотреть' },
+    { h:'学习', p:'xuéxí', t:'учиться' }, { h:'说话', p:'shuōhuà', t:'говорить' },
+    { h:'睡觉', p:'shuìjiào', t:'спать' }, { h:'读书', p:'dúshū', t:'читать' },
+    { h:'写', p:'xiě', t:'писать' }, { h:'工作', p:'gōngzuò', t:'работать' },
+  ],
+  food: [
+    { h:'米饭', p:'mǐfàn', t:'рис' }, { h:'苹果', p:'píngguǒ', t:'яблоко' },
+    { h:'菜', p:'cài', t:'блюдо' },
+  ],
+  drinks: [
+    { h:'茶', p:'chá', t:'чай' }, { h:'水', p:'shuǐ', t:'вода' },
+  ],
+  places: [
+    { h:'家', p:'jiā', t:'дом' }, { h:'学校', p:'xuéxiào', t:'школа' },
+    { h:'商店', p:'shāngdiàn', t:'магазин' }, { h:'饭馆', p:'fànguǎn', t:'ресторан' },
+    { h:'医院', p:'yīyuàn', t:'больница' }, { h:'北京', p:'Běijīng', t:'Пекин' },
+  ],
+  things: [
+    { h:'书', p:'shū', t:'книга' }, { h:'电视', p:'diànshì', t:'телевизор' },
+    { h:'电脑', p:'diànnǎo', t:'компьютер' }, { h:'电影', p:'diànyǐng', t:'фильм' },
+    { h:'猫', p:'māo', t:'кошка' }, { h:'狗', p:'gǒu', t:'собака' },
+    { h:'苹果', p:'píngguǒ', t:'яблоко' },
+  ],
+  time: [
+    { h:'今天', p:'jīntiān', t:'сегодня' }, { h:'明天', p:'míngtiān', t:'завтра' },
+    { h:'昨天', p:'zuótiān', t:'вчера' }, { h:'早上', p:'zǎoshang', t:'утром' },
+    { h:'中午', p:'zhōngwǔ', t:'в полдень' }, { h:'现在', p:'xiànzài', t:'сейчас' },
+  ],
+  qualities: [
+    { h:'很大', p:'hěn dà', t:'большой' }, { h:'很小', p:'hěn xiǎo', t:'маленький' },
+    { h:'很好', p:'hěn hǎo', t:'хороший' }, { h:'很漂亮', p:'hěn piàoliang', t:'красивый' },
+    { h:'很好吃', p:'hěn hǎochī', t:'очень вкусный' },
+  ],
+  weather: [
+    { h:'天气很好', p:'tiānqì hěn hǎo', t:'погода хорошая' },
+    { h:'天气很热', p:'tiānqì hěn rè', t:'погода жаркая' },
+    { h:'天气很冷', p:'tiānqì hěn lěng', t:'погода холодная' },
+    { h:'下雨了', p:'xià yǔ le', t:'пошёл дождь' },
+  ],
+};
+
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const N = () => rnd(VOC.names);
+const T = () => rnd(VOC.time);
+const PL = () => rnd(VOC.places);
+const ACT = () => rnd(VOC.actions);
+const FOOD = () => rnd(VOC.food);
+const DR = () => rnd(VOC.drinks);
+const TH = () => rnd(VOC.things);
+const Q = () => rnd(VOC.qualities);
+const W = () => rnd(VOC.weather);
+
+// ===== Сценарии: каждый возвращает массив предложений {zh, ru, words} =====
+// Все предложения грамматически согласованы: между zh и ru соответствие 1:1.
+const SCENES = [
+  // 1. Семья дома
+  () => {
+    const who = rnd([VOC.he, VOC.she])[0];
+    const person = N();
+    const food = FOOD();
+    const act = ACT();
+    return [
+      { zh:'我是'+person.h+'的朋友。', ru:'Я — друг имени '+person.t+'.', words:[] },
+      { zh:'今天'+person.h+'在家。', ru:'Сегодня '+person.t+' дома.', words:[] },
+      { zh: who.h+'吃'+food.h+'。', ru: who.t+' ест ('+food.t+').', words:[food, who] },
+      { zh: who.h+'喝'+DR().h+'。', ru: who.t+' пьёт ('+DR().t+').', words:[] },
+      { zh: who.h+'很'+rnd(['高兴','好'])+'。', ru: who.t+' очень рад / доволен.', words:[] },
+    ];
+  },
+  // 2. Школа
+  () => {
+    const who = rnd([VOC.i, VOC.he])[0];
+    const person = N();
+    const thing = TH();
+    return [
+      { zh:'我是学生。', ru:'Я — студент.', words:[] },
+      { zh:'今天我们去学校。', ru:'Сегодня мы идём в школу.', words:[] },
+      { zh:'老师'+rnd(['说','看'])+'话。', ru:'Учитель говорит / показывает (текст).', words:[] },
+      { zh:'我学汉语。', ru:'Я учу китайский язык.', words:[] },
+      { zh: who.h+'看'+thing.h+'。', ru: who.t+' смотрит/читает ('+thing.t+').', words:[thing] },
+      { zh:'学校很大。', ru:'Школа большая.', words:[] },
+    ];
+  },
+  // 3. В ресторане
+  () => {
+    const food = FOOD(), drink = DR();
+    return [
+      { zh:'今天我去饭馆。', ru:'Сегодня я иду в ресторан.', words:[] },
+      { zh:'我吃'+food.h+'。', ru:'Я ем ('+food.t+').', words:[food] },
+      { zh: food.h+Q().h+'。', ru: food.t+' — '+Q().t+'.', words:[food] },
+      { zh:'我喝'+drink.h+'。', ru:'Я пью ('+drink.t+').', words:[drink] },
+      { zh:'饭馆的人很好。', ru:'Люди в ресторане добрые.', words:[] },
+    ];
+  },
+  // 4. Прогулка и погода
+  () => {
+    const w = W(), tm = T();
+    return [
+      { zh: tm.h+'，'+w.h+'。', ru: tm.t+' погода: '+w.t+'.', words:[w] },
+      { zh:'我和朋友去公园。', ru:'Мы с другом идём в парк (гулять).', words:[] },
+      { zh:'我们说话。', ru:'Мы разговариваем.', words:[] },
+      { zh:'我们很高兴。', ru:'Мы очень рады.', words:[] },
+    ];
+  },
+  // 5. Покупки
+  () => {
+    const thing = TH();
+    return [
+      { zh:'今天我去商店。', ru:'Сегодня я иду в магазин.', words:[] },
+      { zh:'我买'+thing.h+'。', ru:'Я покупаю ('+thing.t+').', words:[thing] },
+      { zh: thing.h+Q().h+'。', ru: thing.t+' — '+Q().t+'.', words:[thing] },
+      { zh:'我给钱。', ru:'Я плачу (даю деньги).', words:[] },
+      { zh:'我回家。', ru:'Я иду домой.', words:[] },
+    ];
+  },
+  // 6. Врач
+  () => {
+    const who = rnd([VOC.he, VOC.she])[0];
+    return [
+      { zh:'昨天他不好。', ru:'Вчера ему было плохо (не хорошо).', words:[] },
+      { zh:'今天我们去医院。', ru:'Сегодня мы идём в больницу.', words:[] },
+      { zh:'医生很好。', ru:'Врач хороший.', words:[] },
+      { zh: who.h+'吃药。', ru: who.t+' принимает лекарство.', words:[] },
+      { zh:'现在'+who.h+'很高兴。', ru:'Сейчас '+who.t+' снова рад.', words:[] },
+    ];
+  },
+  // 7. Кот и собака
+  () => {
+    const a1 = { h:'猫', p:'māo', t:'кошка' }, a2 = { h:'狗', p:'gǒu', t:'собака' };
+    return [
+      { zh:'我家有一只猫。', ru:'У меня (дома) есть кошка.', words:[] },
+      { zh:'猫很小。', ru:'Кошка маленькая.', words:[] },
+      { zh:'猫看'+a2.h+'。', ru:'Кошка смотрит на ('+a2.t+').', words:[a2] },
+      { zh:a2.h+'很'+rnd(['大','好'])+'。', ru: a2.t+' очень '+rnd(['большой','хороший'])+'.', words:[a2] },
+      { zh:'它们很好。', ru:'Они оба хорошие.', words:[] },
+    ];
+  },
+  // 8. Телефон
+  () => {
+    const who = rnd([VOC.she, VOC.he])[0];
+    const person = N(), tm = T();
+    return [
+      { zh: tm.h+'我给'+person.h+'打电话。', ru: tm.t+' я звоню ('+person.t+').', words:[] },
+      { zh:'我们说话。', ru:'Мы разговариваем.', words:[] },
+      { zh: person.h+'在北京。', ru: person.t+' в Пекине.', words:[] },
+      { zh: who.h+'明天回家。', ru: who.t+' завтра вернётся домой.', words:[] },
+      { zh:'我们都很高兴。', ru:'Мы оба очень рады.', words:[] },
+    ];
+  },
+  // 9. Работа
+  () => {
+    const person = N(), tm = T();
+    return [
+      { zh: person.h+'是我的老师。', ru: person.t+' — мой учитель.', words:[] },
+      { zh: tm.h+person.h+'工作。', ru: tm.t+' '+person.t+' работает.', words:[] },
+      { zh:'他工作很多。', ru:'Он много работает.', words:[] },
+      { zh:'晚上他看书。', ru:'Вечером он читает книгу.', words:[] },
+      { zh:'他的书很好。', ru:'Его книга хорошая.', words:[] },
+    ];
+  },
+  // 10. Кино
+  () => {
+    const thing = { h:'电影', p:'diànyǐng', t:'фильм' };
+    return [
+      { zh:'今天我很好。', ru:'Сегодня я в хорошем настроении.', words:[] },
+      { zh:'我和朋友去看电影。', ru:'Мы с другом идём смотреть фильм.', words:[] },
+      { zh:'电影很漂亮。', ru:'Фильм очень красивый.', words:[] },
+      { zh:'我们说话，吃饭。', ru:'Мы разговариваем, едим.', words:[] },
+      { zh:'今天很好。', ru:'День был отличный.', words:[] },
+    ];
+  },
+];
+
+// ===== Генерация =====
+const LEN = { short:[4,5], medium:[6,8], long:[9,12] };
+
+const zhEl = document.getElementById('zhText');
+const ruEl = document.getElementById('ruText');
+const popEl = document.getElementById('wordPop');
+const metaEl = document.getElementById('meta');
+const ruBtn = document.getElementById('toggleRu');
+
+let currentWords = [];
+
+// Полный словарь для подсветки: hanzi -> {h,p,t}
+const DICT = new Map();
+for (const group of Object.values(VOC)) {
+  for (const w of group) DICT.set(w.h, w);
+}
+// Сортировка по длине (сначала длинные слова — для longest match)
+const DICT_KEYS = [...DICT.keys()].sort((a, b) => b.length - a.length);
+
+// Переключение длины текста
+document.getElementById('lenSeg').addEventListener('click', (e) => {
+  const btn = e.target.closest('.seg-btn');
+  if (!btn) return;
+  document.querySelectorAll('#lenSeg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+function generate() {
+  const [minS, maxS] = LEN[document.querySelector('#lenSeg .seg-btn.active').dataset.val];
+  const n = minS + Math.floor(Math.random() * (maxS - minS + 1));
+
+  // Набираем предложения из случайных сценариев целыми предложениями
+  let sentences = [];
+  let guard = 0;
+  while (sentences.length < n && guard < 30) {
+    const scene = rnd(SCENES)();
+    // Перемешиваем предложения сцены, но сохраняем естественный порядок внутри
+    sentences = sentences.concat(scene);
+    guard++;
+  }
+  // Не режем середину рассказа: берём не больше maxS, лишнее отбрасываем целиком
+  sentences = sentences.slice(0, Math.max(n, Math.min(sentences.length, maxS)));
+
+  const zh = sentences.map(x => x.zh).join('');
+  const ru = sentences.map(x => x.ru).join(' ');
+  renderText(zh, ru);
+}
+
+// Однопроходная подсветка: longest-match без повреждения HTML
+function highlight(text) {
+  let html = '';
+  let buffer = '';
+  const found = new Map();
+
+  for (let i = 0; i < text.length; i++) {
+    let matched = null;
+    for (const key of DICT_KEYS) {
+      if (text.startsWith(key, i)) { matched = key; break; }
+    }
+    if (matched) {
+      if (buffer) { html += escapeHtml(buffer); buffer = ''; }
+      const w = DICT.get(matched);
+      html += '<span class="word" data-h="' + escapeHtml(matched) + '">' + escapeHtml(matched) + '</span>';
+      found.set(matched, w);
+      i += matched.length - 1;
+    } else {
+      buffer += text[i];
+    }
+  }
+  if (buffer) html += escapeHtml(buffer);
+  currentWords = [...found.values()];
+  return html;
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderText(zh, ru) {
+  zhEl.innerHTML = highlight(zh);
+  ruEl.textContent = ru;
+  ruEl.style.display = 'none';
+  ruBtn.textContent = '👁 Показать перевод';
+  popEl.classList.remove('show');
+  const cnt = (zh.match(/。/g) || []).length;
+  metaEl.textContent = 'Предложений: ' + cnt + ' · Нажми на подчёркнутое слово, чтобы увидеть перевод';
+}
+
+zhEl.addEventListener('click', (e) => {
+  const w = e.target.closest('.word');
+  if (!w) return;
+  const hanzi = w.dataset.h;
+  const word = DICT.get(hanzi) || currentWords.find(x => x.h === hanzi);
+  if (!word) return;
+  popEl.querySelector('.wp-hanzi').textContent = word.h;
+  popEl.querySelector('.wp-pinyin').textContent = word.p;
+  popEl.querySelector('.wp-tr').textContent = word.t;
+  popEl.classList.add('show');
+});
+
+ruBtn.addEventListener('click', () => {
+  const hidden = ruEl.style.display === 'none';
+  ruEl.style.display = hidden ? 'block' : 'none';
+  ruBtn.textContent = hidden ? '🙈 Скрыть перевод' : '👁 Показать перевод';
+});
+
+document.getElementById('genBtn').addEventListener('click', generate);
+
+document.querySelectorAll('.fade-in').forEach((el, i) => {
+  setTimeout(() => el.classList.add('visible'), 140 * i + 100);
+});
+
+generate();
+
+// ===== Светлячки =====
+(function(){
+  var c = document.getElementById('fireflies');
+  if (!c) return;
+  var x = c.getContext('2d');
+  function size(){ c.width = window.innerWidth; c.height = window.innerHeight; }
+  size();
+  window.addEventListener('resize', size);
+  var bugs = [];
+  function spawn() {
+    bugs.push({
+      x: Math.random() * c.width,
+      y: Math.random() * c.height,
+      a: Math.random() * Math.PI * 2,
+      turn: (Math.random() - 0.5) * 0.06,
+      speed: 0.15 + Math.random() * 0.3,
+      phase: Math.random() * Math.PI * 2,
+      pulse: 0.01 + Math.random() * 0.02,
+      r: 1 + Math.random() * 1.6
+    });
+  }
+  for (var i = 0; i < 22; i++) spawn();
+  function tick() {
+    x.clearRect(0, 0, c.width, c.height);
+    for (var i = 0; i < bugs.length; i++) {
+      var b = bugs[i];
+      b.a += b.turn;
+      if (Math.random() < 0.03) b.turn = (Math.random() - 0.5) * 0.06;
+      b.x += Math.cos(b.a) * b.speed;
+      b.y += Math.sin(b.a) * b.speed;
+      if (b.x < -20) b.x = c.width + 20;
+      if (b.x > c.width + 20) b.x = -20;
+      if (b.y < -20) b.y = c.height + 20;
+      if (b.y > c.height + 20) b.y = -20;
+      b.phase += b.pulse;
+      var glow = (Math.sin(b.phase) + 1) / 2;
+      x.beginPath();
+      x.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      x.fillStyle = 'rgba(140, 235, 190, ' + (0.08 + 0.5 * glow).toFixed(3) + ')';
+      x.fill();
+      x.beginPath();
+      x.arc(b.x, b.y, b.r * 3.2, 0, Math.PI * 2);
+      x.fillStyle = 'rgba(110, 220, 175, ' + (0.03 + 0.09 * glow).toFixed(3) + ')';
+      x.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</body>
+</html>
