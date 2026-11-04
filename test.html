@@ -135,11 +135,12 @@
     pointer-events:none;
   }
   .q-hanzi {
-    font-size:clamp(3rem, 10vw, 5rem);
+    font-size:clamp(2.2rem, 7vw, 3.6rem);
     color:#f3ead8;
     font-family:'Noto Serif SC',serif;
-    line-height:1.1;
+    line-height:1.2;
     text-shadow:0 4px 30px rgba(0,0,0,.5);
+    text-align:center;
   }
   .q-badge {
     position:absolute; top:14px; left:18px;
@@ -446,8 +447,8 @@ const cards = [
   { hanzi: '做', pinyin: 'zuò', translation: 'делать', category: 'Действия' },
 ];
 
-const CATS = ['Числа','Люди','Еда','Транспорт и места','Время','Эмоции','Погода','Учёба','Вещи','Вежливость','Действия','Грамматика'];
-const CAT_ICONS = {'Числа':'🔢','Люди':'👥','Еда':'🍜','Транспорт и места':'🚕','Время':'🕐','Эмоции':'😊','Погода':'🌤','Учёба':'📚','Вещи':'🏠','Вежливость':'🙏','Действия':'⚡','Грамматика':'🧩'};
+const CATS = ['Числа','Люди','Еда','Транспорт и места','Время','Эмоции','Погода','Учёба','Вещи','Вежливость','Действия','Грамматика','Вызов HSK1'];
+const CAT_ICONS = {'Числа':'🔢','Люди':'👥','Еда':'🍜','Транспорт и места':'🚕','Время':'🕐','Эмоции':'😊','Погода':'🌤','Учёба':'📚','Вещи':'🏠','Вежливость':'🙏','Действия':'⚡','Грамматика':'🧩','Вызов HSK1':'🔥'};
 
 const catGrid = document.getElementById('catGrid');
 const hintCount = document.getElementById('hintCount');
@@ -456,7 +457,7 @@ const selected = new Set();
 function buildCats() {
   catGrid.innerHTML = '';
   for (const cat of CATS) {
-    const count = cards.filter(c => c.category === cat).length;
+    const count = cat === 'Вызов HSK1' ? cards.length : cards.filter(c => c.category === cat).length;
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (selected.has(cat) ? ' selected' : '');
     btn.innerHTML = CAT_ICONS[cat] + ' ' + cat + ' <span class="badge">' + count + '</span>';
@@ -470,7 +471,9 @@ function buildCats() {
 }
 
 function updateHint() {
-  const n = cards.filter(c => selected.has(c.category)).length;
+  let n;
+  if (selected.has('Вызов HSK1')) n = cards.length; // вызов = все слова
+  else n = cards.filter(c => selected.has(c.category)).length;
   hintCount.textContent = selected.size === 0
     ? 'Категории не выбраны'
     : 'Выбрано слов: ' + n;
@@ -504,11 +507,20 @@ function shuffle(arr) {
   return arr;
 }
 
+let challengeMode = false;
+
 document.getElementById('startBtn').addEventListener('click', () => {
   if (selected.size === 0) return;
-  quizCards = shuffle(cards.filter(c => selected.has(c.category)).slice());
-  // Максимум 20 вопросов для комфортного теста
-  if (quizCards.length > 20) quizCards = quizCards.slice(0, 20);
+  challengeMode = selected.size === 1 && selected.has('Вызов HSK1');
+  let pool;
+  if (challengeMode) {
+    pool = cards.slice(); // все 154 слова
+  } else {
+    pool = cards.filter(c => selected.has(c.category)).slice();
+  }
+  quizCards = shuffle(pool);
+  const maxQ = challengeMode ? 25 : 20;
+  if (quizCards.length > maxQ) quizCards = quizCards.slice(0, maxQ);
   qi = 0; correct = 0;
   setupEl.style.display = 'none';
   resultEl.classList.remove('show');
@@ -516,23 +528,46 @@ document.getElementById('startBtn').addEventListener('click', () => {
   showQuestion();
 });
 
+// Генерация вопроса в зависимости от типа задачи
+function makeQuestion(card, allCards, mode) {
+  // mode: 'h2t' hanzi->перевод, 't2h' перевод->hanzi,
+  //       'p2t' пиньинь->перевод, 'h2p' hanzi->пиньинь, 't2p' перевод->пиньинь
+  const pool = allCards.filter(x => x.hanzi !== card.hanzi || x.translation !== card.translation);
+  const wrongs = shuffle(pool.slice()).slice(0, 3);
+  switch (mode) {
+    case 't2h': return { prompt: card.translation, answers: [card.hanzi, ...wrongs.map(w => w.hanzi)], right: card.hanzi, badge: 'Выбери иероглиф' };
+    case 'p2t': return { prompt: card.pinyin, answers: [card.translation, ...wrongs.map(w => w.translation)], right: card.translation, badge: card.category + ' · по пиньиню' };
+    case 'h2p': return { prompt: card.hanzi, answers: [card.pinyin, ...wrongs.map(w => w.pinyin)], right: card.pinyin, badge: 'Выбери пиньинь' };
+    case 't2p': return { prompt: card.translation, answers: [card.pinyin, ...wrongs.map(w => w.pinyin)], right: card.pinyin, badge: 'Выбери чтение' };
+    default:    return { prompt: card.hanzi, answers: [card.translation, ...wrongs.map(w => w.translation)], right: card.translation, badge: card.category };
+  }
+}
+
+let currentQ = null;
+
 function showQuestion() {
   const c = quizCards[qi];
-  progressEl.textContent = 'Вопрос ' + (qi + 1) + ' из ' + quizCards.length + ' · верно: ' + correct;
-  qBadge.textContent = c.category;
-  qHanzi.textContent = c.hanzi;
+  progressEl.textContent = 'Вопрос ' + (qi + 1) + ' из ' + quizCards.length + ' · верно: ' + correct
+    + (challengeMode ? ' · 🔥 Вызов' : '');
+  currentQ = makeQuestion(c, cards, challengeMode ? pickMode(qi) : 'h2t');
+  qBadge.textContent = currentQ.badge;
+  qHanzi.textContent = currentQ.prompt;
+  // Если вопрос с иероглифом или пиньинем крупным — оставим как есть, он и так крупный
 
-  // Варианты: правильный + 3 случайных других переводов
-  const wrongs = shuffle(cards.filter(x => x.translation !== c.translation)).slice(0, 3);
-  const opts = shuffle([c, ...wrongs]);
+  const opts = shuffle(currentQ.answers.slice());
   optionsEl.innerHTML = '';
   for (const o of opts) {
     const b = document.createElement('button');
     b.className = 'opt';
-    b.textContent = o.translation;
-    b.addEventListener('click', () => answer(b, o, c));
+    b.textContent = o;
+    b.addEventListener('click', () => answer(b, o, currentQ.right));
     optionsEl.appendChild(b);
   }
+}
+
+function pickMode(i) {
+  const modes = ['h2t','t2h','p2t','h2p','t2p'];
+  return modes[i % modes.length];
 }
 
 const flashEl = document.getElementById('answerFlash');
@@ -540,13 +575,13 @@ const flashEl = document.getElementById('answerFlash');
 function answer(btn, picked, right) {
   const buttons = [...optionsEl.children];
   buttons.forEach(b => b.disabled = true);
-  const isRight = picked.translation === right.translation;
+  const isRight = picked === right;
   if (isRight) {
     btn.classList.add('correct');
     correct++;
   } else {
     btn.classList.add('wrong');
-    const rightBtn = buttons.find(b => b.textContent === right.translation);
+    const rightBtn = buttons.find(b => b.textContent === right);
     if (rightBtn) rightBtn.classList.add('reveal');
   }
   // Полноэкранная вспышка
@@ -567,12 +602,20 @@ function showResult() {
   const pct = Math.round(correct / quizCards.length * 100);
   scoreEl.textContent = correct + ' / ' + quizCards.length;
   let m;
-  if (pct === 100) m = 'Безупречно! 你真棒！';
-  else if (pct >= 80) m = 'Отличный результат!';
-  else if (pct >= 60) m = 'Хорошо, но есть куда расти.';
-  else m = 'Повтори категории и попробуй ещё.';
+  if (challengeMode) {
+    if (pct === 100) m = 'Ты покорил Вызов HSK1! 无所不能！';
+    else if (pct >= 80) m = 'Сильный результат для Вызова!';
+    else if (pct >= 60) m = 'Вызов пройден, но не покорён.';
+    else m = 'Вызов tough — попробуй ещё!';
+    detailEl.textContent = pct + '% · режим: все 5 типов задач';
+  } else {
+    if (pct === 100) m = 'Безупречно! 你真棒！';
+    else if (pct >= 80) m = 'Отличный результат!';
+    else if (pct >= 60) m = 'Хорошо, но есть куда расти.';
+    else m = 'Повтори категории и попробуй ещё.';
+    detailEl.textContent = pct + '% правильных ответов';
+  }
   msgEl.textContent = m;
-  detailEl.textContent = pct + '% правильных ответов';
 }
 
 // Кнопка «Ещё раз»
