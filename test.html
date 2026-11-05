@@ -382,6 +382,57 @@
   .result .msg { color:#d8cfbd; font-size:1.1em; }
   .result .detail { color:#a89a83; font-style:italic; }
 
+  /* Таймер Вызова */
+  .timer {
+    color:#c4943a;
+    font-family:'Noto Serif SC',serif;
+    font-size:1.05em;
+    letter-spacing:.1em;
+  }
+  .timer.urgent { color:#c94a52; animation:timerPulse .8s ease-in-out infinite; }
+  @keyframes timerPulse { 50% { opacity:.5; } }
+
+  /* Разбор ошибок в результате */
+  .mistakes {
+    margin-top:6px;
+    width:min(560px, 94vw);
+    max-height:220px;
+    overflow-y:auto;
+    background:rgba(24,19,16,.5);
+    border:1px solid rgba(196,148,58,.25);
+    border-radius:2px;
+    padding:12px 16px;
+    text-align:left;
+  }
+  .mistakes-title {
+    color:#c4943a; font-size:.85em; letter-spacing:.14em;
+    margin-bottom:8px; font-style:italic;
+  }
+  .mistake-row {
+    padding:7px 0;
+    border-bottom:1px dashed rgba(196,148,58,.15);
+    font-size:.92em;
+  }
+  .mistake-row:last-child { border-bottom:none; }
+  .mistake-row .m-hanzi { color:#f3ead8; font-family:'Noto Serif SC',serif; font-size:1.25em; }
+  .mistake-row .m-pinyin { color:#c4943a; font-style:italic; margin:0 8px; }
+  .mistake-row .m-type { color:#c94a52; font-size:.82em; letter-spacing:.06em; }
+  .mistake-row .m-right { color:#a89a83; margin-left:8px; }
+  .no-mistakes { color:#8fae83; font-style:italic; font-size:.95em; margin-top:4px; }
+
+  /* Коробки SRS в итоге */
+  .srs-summary {
+    margin-top:10px;
+    color:#a89a83; font-size:.85em; font-style:italic;
+    display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  }
+  .srs-summary .box-chip {
+    border:1px solid rgba(196,148,58,.3);
+    border-radius:2px;
+    padding:2px 10px;
+    color:#c9a86a;
+  }
+
   .bottom-panel {
     display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
     padding:11px 20px;
@@ -672,6 +723,51 @@ const cards = [
 const CATS = ['Числа','Люди','Еда','Транспорт и места','Время','Эмоции','Погода','Учёба','Вещи','Вежливость','Действия','Грамматика','Вызов HSK1'];
 const CAT_ICONS = {'Числа':'🔢','Люди':'👥','Еда':'🍜','Транспорт и места':'🚕','Время':'🕐','Эмоции':'😊','Погода':'🌤','Учёба':'📚','Вещи':'🏠','Вежливость':'🙏','Действия':'⚡','Грамматика':'🧩','Вызов HSK1':'🔥'};
 
+// ===== SRS: система Лейтнера (5 коробок) =====
+// Интервалы повторения: коробка 1 — каждый раз, 2 — через день, 3 — через 3 дня, 4 — через неделю, 5 — через месяц
+const SRS_KEY = 'hsk-srs-boxes';
+const SRS_INTERVALS_DAYS = [0, 1, 3, 7, 30]; // индекс = коробка-1
+
+function loadSRS() {
+  try { return JSON.parse(localStorage.getItem(SRS_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveSRS(state) {
+  try { localStorage.setItem(SRS_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function srsPromote(hanzi) {
+  const st = loadSRS();
+  const box = st[hanzi] || 1;
+  const nb = Math.min(5, box + 1);
+  st[hanzi] = nb;
+  st[hanzi + ':ts'] = Date.now();
+  saveSRS(st);
+  return nb;
+}
+function srsDemote(hanzi) {
+  const st = loadSRS();
+  st[hanzi] = 1;
+  st[hanzi + ':ts'] = Date.now();
+  saveSRS(st);
+  return 1;
+}
+function srsBoxOf(hanzi) { return loadSRS()[hanzi] || 1; }
+
+// Приоритизация пула: слова из младших коробок и «просроченные» идут первыми
+function srsPrioritize(pool) {
+  const now = Date.now();
+  return pool.slice().sort((a, b) => {
+    const sa = loadSRS(), sb = loadSRS();
+    const boxA = sa[a.hanzi] || 1, boxB = sb[b.hanzi] || 1;
+    const tsA = sa[a.hanzi + ':ts'] || 0, tsB = sb[b.hanzi + ':ts'] || 0;
+    const dueA = tsA + SRS_INTERVALS_DAYS[boxA - 1] * 864e5 <= now ? 0 : 1;
+    const dueB = tsB + SRS_INTERVALS_DAYS[boxB - 1] * 864e5 <= now ? 0 : 1;
+    // сначала просроченные, потом по возрастанию коробки
+    if (dueA !== dueB) return dueA - dueB;
+    return boxA - boxB;
+  });
+}
+
 const catGrid = document.getElementById('catGrid');
 const hintCount = document.getElementById('hintCount');
 const selected = new Set();
@@ -720,6 +816,8 @@ const msgEl = document.getElementById('msg');
 const detailEl = document.getElementById('detail');
 
 let quizCards = [], qi = 0, correct = 0;
+let mistakes = []; // {hanzi, pinyin, right, picked, type, card}
+let challengeStartTs = 0, timerInterval = null;
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -740,15 +838,48 @@ document.getElementById('startBtn').addEventListener('click', () => {
   } else {
     pool = cards.filter(c => selected.has(c.category)).slice();
   }
-  quizCards = shuffle(pool);
+  // SRS: сначала слова из младших коробок и просроченные, потом случайность внутри групп
+  const prioritized = srsPrioritize(pool);
+  quizCards = shuffle(prioritized.slice(0, Math.max(25, Math.ceil(prioritized.length * 0.6))));
   const maxQ = challengeMode ? 25 : 20;
   if (quizCards.length > maxQ) quizCards = quizCards.slice(0, maxQ);
-  qi = 0; correct = 0;
+  qi = 0; correct = 0; mistakes = [];
   setupEl.style.display = 'none';
   resultEl.classList.remove('show');
   quizEl.classList.add('show');
+  // Таймер для Вызова: 5 минут на 25 вопросов
+  if (challengeMode) {
+    challengeStartTs = Date.now();
+    startTimer(5 * 60);
+  } else if (timerInterval) { clearInterval(timerInterval); timerEl.textContent = ''; }
   showQuestion();
 });
+
+// ===== Таймер Вызова =====
+const timerEl = document.createElement('div');
+timerEl.className = 'timer';
+progressEl.parentElement.insertBefore(timerEl, progressEl);
+
+function startTimer(seconds) {
+  let remaining = seconds;
+  if (timerInterval) clearInterval(timerInterval);
+  const render = () => {
+    const m = Math.floor(remaining / 60), sec = remaining % 60;
+    timerEl.textContent = '⏱ ' + m + ':' + String(sec).padStart(2, '0');
+    timerEl.classList.toggle('urgent', remaining <= 30);
+  };
+  render();
+  timerInterval = setInterval(() => {
+    remaining--;
+    render();
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      timerEl.textContent = '';
+      // Время вышло — показать результат с текущими ответами
+      showResult(true);
+    }
+  }, 1000);
+}
 
 // Генерация вопроса в зависимости от типа задачи
 function makeQuestion(card, allCards, mode) {
@@ -763,6 +894,37 @@ function makeQuestion(card, allCards, mode) {
     case 't2p': return { prompt: card.translation, answers: [card.pinyin, ...wrongs.map(w => w.pinyin)], right: card.pinyin, badge: 'Выбери чтение' };
     default:    return { prompt: card.hanzi, answers: [card.translation, ...wrongs.map(w => w.translation)], right: card.translation, badge: card.category };
   }
+}
+
+// Классификация: что именно перепутал
+function classifyMistake(card, picked, mode) {
+  const norm = v => v.toLowerCase().replace(/\s+/g, '');
+  const pickedN = norm(picked);
+  // По типу вопроса определяем, что перепутано
+  if (mode === 'h2t' || mode === 'p2t' || mode === 't2h') {
+    // Ожидалось значение или иероглиф
+    const cardByPick = cards.find(x => norm(x.hanzi) === pickedN || norm(x.translation) === pickedN || norm(x.pinyin) === pickedN);
+    if (cardByPick) {
+      // Проверяем тоны: если пиньинь совпадает без тонов, но слоги те же — путаница тонов
+      const stripTones = v => v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g,'');
+      if (stripTones(card.pinyin) === stripTones(cardByPick.pinyin) && card.hanzi !== cardByPick.hanzi) {
+        return 'путаница тона';
+      }
+      if (card.pinyin === cardByPick.pinyin) return 'путаница значения';
+      return 'путаница значения';
+    }
+    return 'ошибка значения';
+  }
+  if (mode === 'h2p' || mode === 't2p') {
+    // Ожидался пиньинь
+    const cardByPick = cards.find(x => norm(x.pinyin) === pickedN);
+    if (cardByPick) {
+      if (cardByPick.hanzi === card.hanzi) return 'ошибка чтения';
+      return 'путаница чтения';
+    }
+    return 'ошибка чтения';
+  }
+  return 'ошибка';
 }
 
 let currentQ = null;
@@ -807,13 +969,24 @@ function answer(btn, picked, right) {
   const buttons = [...optionsEl.children];
   buttons.forEach(b => b.disabled = true);
   const isRight = picked === right;
+  const card = quizCards[qi];
+  const mode = challengeMode ? pickMode(qi) : 'h2t';
   if (isRight) {
     btn.classList.add('correct');
     correct++;
+    srsPromote(card.hanzi);
   } else {
     btn.classList.add('wrong');
     const rightBtn = buttons.find(b => b.textContent === right);
     if (rightBtn) rightBtn.classList.add('reveal');
+    srsDemote(card.hanzi);
+    mistakes.push({
+      hanzi: card.hanzi,
+      pinyin: card.pinyin,
+      right: right,
+      picked: picked,
+      type: classifyMistake(card, picked, mode)
+    });
   }
   // Полноэкранная вспышка: гаснет плавно и исчезает ровно когда появляется новый вопрос
   flashEl.className = 'answer-flash ' + (isRight ? 'good' : 'bad');
@@ -824,7 +997,8 @@ function answer(btn, picked, right) {
   }, 1100);
 }
 
-function showResult() {
+function showResult(timeUp = false) {
+  if (timerInterval) { clearInterval(timerInterval); timerEl.textContent = ''; }
   quizEl.classList.remove('show');
   resultEl.classList.add('show');
   const pct = Math.round(correct / quizCards.length * 100);
@@ -844,6 +1018,54 @@ function showResult() {
     detailEl.textContent = pct + '% правильных ответов';
   }
   msgEl.textContent = m;
+
+  // Разбор ошибок
+  const oldDetail = detailEl.textContent;
+  let mistakesHtml = '';
+  if (mistakes.length === 0) {
+    mistakesHtml = '<div class="no-mistakes">Ошибок нет — все слова в высших коробках! 🎉</div>';
+  } else {
+    mistakesHtml = '<div class="mistakes-title">Разбор ошибок (' + mistakes.length + ')</div>';
+    for (const mk of mistakes) {
+      mistakesHtml += '<div class="mistake-row">'
+        + '<span class="m-hanzi">' + mk.hanzi + '</span>'
+        + '<span class="m-pinyin">' + mk.pinyin + '</span>'
+        + '<span class="m-type">' + mk.type + '</span>'
+        + '<span class="m-right">верно: «' + mk.right + '»</span>'
+        + '</div>';
+    }
+  }
+  if (timeUp) detailEl.textContent = oldDetail + ' · ⏱ время вышло';
+
+  let mistakesBox = resultEl.querySelector('.mistakes');
+  if (!mistakesBox) {
+    mistakesBox = document.createElement('div');
+    mistakesBox.className = 'mistakes';
+    resultEl.insertBefore(mistakesBox, againBtn);
+  }
+  mistakesBox.innerHTML = mistakesHtml;
+
+  // Статистика коробок SRS после теста
+  const st = loadSRS();
+  const boxCounts = [0,0,0,0,0];
+  for (const c of cards) {
+    const b = st[c.hanzi] || 1;
+    boxCounts[b - 1]++;
+  }
+  let srsHtml = '<div class="srs-summary">';
+  srsHtml += '<span class="box-chip">📦 Коробка 1: ' + boxCounts[0] + '</span>';
+  srsHtml += '<span class="box-chip">📦 2: ' + boxCounts[1] + '</span>';
+  srsHtml += '<span class="box-chip">📦 3: ' + boxCounts[2] + '</span>';
+  srsHtml += '<span class="box-chip">📦 4: ' + boxCounts[3] + '</span>';
+  srsHtml += '<span class="box-chip">📦 5: ' + boxCounts[4] + '</span>';
+  srsHtml += '</div>';
+  let srsBox = resultEl.querySelector('.srs-summary');
+  if (!srsBox) {
+    srsBox = document.createElement('div');
+    srsBox.className = 'srs-summary';
+    resultEl.insertBefore(srsBox, againBtn);
+  }
+  srsBox.outerHTML = srsHtml;
 }
 
 // Кнопка «Ещё раз»
@@ -853,6 +1075,7 @@ againBtn.textContent = 'Пройти ещё раз';
 againBtn.addEventListener('click', () => {
   resultEl.classList.remove('show');
   setupEl.style.display = '';
+  if (timerInterval) { clearInterval(timerInterval); timerEl.textContent = ''; }
 });
 resultEl.appendChild(againBtn);
 
