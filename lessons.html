@@ -10,272 +10,736 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { min-height:100%; }
-
-  body {
-    background:#0d0b0a;
-    font-family:'Cormorant Garamond','Noto Serif SC',serif;
-    color:#e9e2d5;
-    display:flex; flex-direction:column; align-items:center;
-    padding:30px 16px 40px;
-    gap:16px;
-    position:relative;
-    overflow-x:hidden;
-  }
-
+  body { background:#0d0b0a; font-family:'Cormorant Garamond','Noto Serif SC',serif; color:#e9e2d5; display:flex; flex-direction:column; align-items:center; padding:30px 16px 40px; gap:16px; position:relative; overflow-x:hidden; }
   .layer { position:absolute; inset:0; pointer-events:none; }
-
-  /* Тёплая тушь: красное солнце и золото */
-  .mist {
-    background:
+  .mist { background:
       radial-gradient(ellipse 55% 45% at 50% 0%, rgba(146,26,33,.14) 0%, transparent 70%),
       radial-gradient(ellipse 45% 40% at 12% 100%, rgba(196,148,58,.08) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 40% at 88% 100%, rgba(60,26,24,.18) 0%, transparent 70%);
-  }
-
-  .grain {
-    z-index:4; opacity:.05; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  .header, .lesson, .back-home { position:relative; z-index:3; }
-
-  /* ===== Шапка ===== */
+      radial-gradient(ellipse 45% 40% at 88% 100%, rgba(60,26,24,.18) 0%, transparent 70%); }
+  .grain { z-index:4; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .header, .path-bar, .lesson-view, .future, .soon, .back-home { position:relative; z-index:3; }
   .header { text-align:center; max-width:640px; }
-  .header-seal {
-    width:44px; height:44px; margin:0 auto 14px;
-    background:linear-gradient(150deg, #b01823, #8d1019);
-    border-radius:6px;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Noto Serif SC',serif; font-weight:900;
-    font-size:1.3rem; color:#f5ead6;
-    box-shadow:0 6px 24px rgba(176,24,35,.45), inset 0 0 0 2px rgba(245,234,214,.28), inset 0 0 0 5px rgba(176,24,35,.9);
-    transform:rotate(-4deg);
-  }
-  .header h1 {
-    font-family:'Noto Serif SC',serif; font-weight:900;
-    font-size:clamp(2rem, 5vw, 3rem);
-    letter-spacing:.12em; color:#f3ead8;
-  }
-  .header .sub {
-    margin-top:8px; font-style:italic; color:#a89a83;
-    font-size:1.05rem; letter-spacing:.1em;
-  }
-  .header .divider {
-    display:flex; align-items:center; gap:14px;
-    margin:20px auto 0; width:min(300px, 70vw);
-  }
-  .header .divider::before, .header .divider::after {
-    content:''; flex:1; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(196,148,58,.55));
-  }
+  .header-seal { width:44px; height:44px; margin:0 auto 14px; background:linear-gradient(150deg, #b01823, #8d1019); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:900; font-size:1.3rem; color:#f5ead6; box-shadow:0 6px 24px rgba(176,24,35,.45), inset 0 0 0 2px rgba(245,234,214,.28), inset 0 0 0 5px rgba(176,24,35,.9); transform:rotate(-4deg); }
+  .header h1 { font-family:'Noto Serif SC',serif; font-weight:900; font-size:clamp(2rem, 5vw, 3rem); letter-spacing:.12em; color:#f3ead8; }
+  .header .sub { margin-top:8px; font-style:italic; color:#a89a83; font-size:1.05rem; letter-spacing:.1em; }
+  .header .divider { display:flex; align-items:center; gap:14px; margin:20px auto 0; width:min(300px, 70vw); }
+  .header .divider::before, .header .divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, rgba(196,148,58,.55)); }
   .header .divider::after { background:linear-gradient(90deg, rgba(196,148,58,.55), transparent); }
-  .header .divider .gem {
-    width:7px; height:7px; background:#c4943a;
-    transform:rotate(45deg);
-    box-shadow:0 0 12px rgba(196,148,58,.8);
-  }
-
-  /* ===== Сетка уроков ===== */
-  .lessons {
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
-    gap:18px;
-    width:min(1060px, 96vw);
-    position:relative; z-index:3;
-  }
-
-  .lesson {
-    border:1px solid rgba(196,148,58,.3);
-    background:linear-gradient(150deg, rgba(38,30,26,.6), rgba(24,19,16,.72));
-    backdrop-filter:blur(6px);
-    padding:18px 20px 16px;
-    position:relative;
-    transition:transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, box-shadow .35s ease;
-  }
-  .lesson::before {
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(120deg, transparent 30%, rgba(245,234,214,.07) 48%, transparent 62%);
-    transform:translateX(-120%);
-    transition:transform .8s ease;
-    pointer-events:none;
-  }
-  .lesson:hover::before { transform:translateX(120%); }
-  .lesson:hover {
-    transform:translateY(-4px);
-    border-color:rgba(196,148,58,.6);
-    box-shadow:0 18px 44px rgba(0,0,0,.5), 0 0 0 1px rgba(196,148,58,.1), 0 0 36px rgba(176,24,35,.1);
-  }
-
-  .lesson .num {
-    position:absolute; top:14px; right:16px;
-    font-family:'Noto Serif SC',serif; font-weight:900;
-    font-size:.95rem; color:#8d1019;
-    background:rgba(176,24,35,.16);
-    border:1px solid rgba(196,148,58,.35);
-    width:34px; height:34px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    letter-spacing:0;
-  }
-  .lesson .hz {
-    font-family:'Noto Serif SC',serif; font-weight:600;
-    font-size:1.5rem; color:#c94a52; letter-spacing:.06em;
-  }
-  .lesson .py {
-    font-style:italic; color:#c4943a; font-size:.95rem;
-    letter-spacing:.05em; margin-top:2px;
-  }
-  .lesson .ru {
-    font-size:1.05rem; color:#e9e2d5; margin-top:6px; letter-spacing:.03em;
-  }
-  .lesson .topic {
-    margin-top:8px; font-size:.92rem; color:#a89a83; line-height:1.55;
-  }
-  .lesson .chips {
-    display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
-  }
-  .lesson .chip {
-    font-family:'Noto Serif SC',serif; font-size:.95rem;
-    color:#e0d5bf; border:1px solid rgba(196,148,58,.25);
-    padding:3px 10px; border-radius:999px;
-    background:rgba(196,148,58,.06);
-  }
-  .lesson .pages {
-    margin-top:12px; font-size:.8rem; color:#6e6355;
-    letter-spacing:.08em; font-style:italic;
-  }
-
-  .soon {
-    margin-top:6px; width:min(1060px, 96vw);
-    text-align:center; font-style:italic; color:#8d8172;
-    font-size:.98rem; letter-spacing:.06em;
-    position:relative; z-index:3;
-  }
+  .header .divider .gem { width:7px; height:7px; background:#c4943a; transform:rotate(45deg); box-shadow:0 0 12px rgba(196,148,58,.8); }
+  .path-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; width:min(1060px, 96vw); }
+  .path-node { border:1px solid rgba(196,148,58,.35); background:linear-gradient(150deg, rgba(38,30,26,.6), rgba(24,19,16,.72)); backdrop-filter:blur(6px); padding:14px 18px 12px; min-width:172px; text-align:center; cursor:pointer; position:relative; transition:transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, box-shadow .35s ease; }
+  .path-node:hover { transform:translateY(-4px); border-color:rgba(196,148,58,.65); box-shadow:0 14px 34px rgba(0,0,0,.45); }
+  .path-node .pn-num { font-size:.8rem; letter-spacing:.2em; color:#8d8172; }
+  .path-node .pn-hz { font-family:'Noto Serif SC',serif; font-weight:600; font-size:1.4rem; color:#c94a52; margin-top:4px; }
+  .path-node .pn-ru { font-size:.95rem; color:#e9e2d5; margin-top:2px; }
+  .path-node .pn-status { margin-top:8px; font-size:.8rem; font-style:italic; letter-spacing:.05em; }
+  .path-node.done .pn-status { color:#c4943a; }
+  .path-node.open .pn-status { color:#8fb08d; }
+  .path-node.locked { opacity:.45; cursor:not-allowed; filter:grayscale(.4); }
+  .path-node.locked:hover { transform:none; box-shadow:none; border-color:rgba(196,148,58,.35); }
+  .path-node.locked .pn-status { color:#6e6355; }
+  .path-node .lock { position:absolute; top:8px; right:10px; font-size:.85rem; opacity:.7; }
+  .lesson-view { width:min(980px, 96vw); border:1px solid rgba(196,148,58,.3); background:linear-gradient(160deg, rgba(38,30,26,.55), rgba(20,16,13,.78)); backdrop-filter:blur(6px); padding:26px clamp(16px, 4vw, 40px) 30px; }
+  .lv-top { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .lv-back { background:none; border:1px solid rgba(196,148,58,.4); color:#a89a83; font-family:inherit; font-size:.95rem; letter-spacing:.08em; padding:6px 14px; cursor:pointer; transition:all .3s ease; }
+  .lv-back:hover { color:#f5ead6; border-color:rgba(196,148,58,.7); }
+  .lv-title { text-align:center; margin-top:10px; }
+  .lv-title .hz { font-family:'Noto Serif SC',serif; font-weight:900; font-size:clamp(1.9rem, 4.5vw, 2.7rem); color:#c94a52; letter-spacing:.08em; }
+  .lv-title .py { font-style:italic; color:#c4943a; font-size:1.05rem; margin-top:2px; }
+  .lv-title .ru { font-size:1.15rem; color:#e9e2d5; margin-top:4px; }
+  .lv-title .intro { font-size:.98rem; color:#a89a83; margin-top:10px; line-height:1.6; max-width:60ch; margin-left:auto; margin-right:auto; }
+  .sec { margin-top:30px; }
+  .sec-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .sec-head .sh-hz { font-family:'Noto Serif SC',serif; font-weight:600; color:#c4943a; font-size:1.05rem; letter-spacing:.2em; }
+  .sec-head .sh-ru { color:#8d8172; font-style:italic; font-size:.95rem; }
+  .sec-head::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, rgba(196,148,58,.35), transparent); }
+  .words-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
+  .word-card { perspective:800px; height:132px; cursor:pointer; }
+  .wc-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.22,1,.36,1); }
+  .word-card.flipped .wc-inner { transform:rotateY(180deg); }
+  .wc-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border:1px solid rgba(196,148,58,.3); background:linear-gradient(150deg, rgba(44,34,28,.7), rgba(26,20,16,.8)); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; }
+  .wc-front .hz { font-family:'Noto Serif SC',serif; font-weight:600; font-size:1.55rem; color:#f3ead8; letter-spacing:.04em; }
+  .wc-front .hint { font-size:.75rem; color:#6e6355; letter-spacing:.12em; font-style:italic; }
+  .wc-back { transform:rotateY(180deg); }
+  .wc-back .py { font-style:italic; color:#c4943a; font-size:1rem; }
+  .wc-back .ru { font-size:1rem; color:#e9e2d5; line-height:1.3; }
+  .word-card.learned .wc-face { border-color:rgba(196,148,58,.75); box-shadow:inset 0 0 0 1px rgba(196,148,58,.4); }
+  .word-card.learned .wc-front .hz::after { content:' ✓'; color:#c4943a; font-size:1rem; }
+  .wc-learn { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); background:none; border:none; color:#8d8172; font-family:inherit; font-size:.72rem; letter-spacing:.1em; cursor:pointer; z-index:2; }
+  .wc-learn:hover { color:#c4943a; }
+  .word-card.learned .wc-learn { color:#c4943a; }
+  .wc-learn { backface-visibility:hidden; }
+  .wc-learn.on-back { transform:translateX(-50%) rotateY(180deg); }
+  .words-progress { margin-top:14px; display:flex; align-items:center; gap:12px; }
+  .wp-bar { flex:1; height:6px; background:rgba(196,148,58,.12); border-radius:3px; overflow:hidden; }
+  .wp-fill { height:100%; width:0; background:linear-gradient(90deg, #8d1019, #c4943a); transition:width .5s ease; }
+  .wp-label { font-size:.88rem; color:#a89a83; font-style:italic; white-space:nowrap; }
+  .dlg { display:flex; flex-direction:column; gap:14px; }
+  .dlg-line { border-left:2px solid rgba(201,74,82,.5); padding:6px 0 6px 16px; }
+  .dlg-line.alt { border-left-color:rgba(196,148,58,.55); }
+  .dlg-who { font-size:.85rem; color:#8d8172; letter-spacing:.12em; font-style:italic; }
+  .dlg-zh { font-family:'Noto Serif SC',serif; font-size:1.22rem; color:#f3ead8; margin-top:2px; }
+  .dlg-py { font-style:italic; color:#c4943a; font-size:.95rem; margin-top:2px; }
+  .dlg-ru { font-size:.98rem; color:#bfb5a4; margin-top:2px; }
+  .gram-grid { display:flex; flex-direction:column; gap:14px; }
+  .gram-card { border:1px solid rgba(196,148,58,.25); background:rgba(196,148,58,.04); padding:16px 18px; }
+  .gram-card .g-t { font-size:1.1rem; color:#c4943a; letter-spacing:.04em; display:flex; gap:10px; align-items:baseline; }
+  .gram-card .g-t .g-hz { font-family:'Noto Serif SC',serif; font-weight:600; }
+  .gram-card .g-b { margin-top:8px; color:#d8cfbf; line-height:1.7; font-size:1.02rem; }
+  .gram-card .g-ex { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+  .gram-card .g-line { padding-left:14px; border-left:2px solid rgba(201,74,82,.45); }
+  .gram-card .g-zh { font-family:'Noto Serif SC',serif; font-size:1.12rem; color:#f3ead8; }
+  .gram-card .g-py { font-style:italic; color:#c4943a; font-size:.9rem; }
+  .gram-card .g-ru { font-size:.95rem; color:#bfb5a4; }
+  .quiz-gate { text-align:center; color:#8d8172; font-style:italic; padding:14px; border:1px dashed rgba(196,148,58,.3); }
+  .quiz-gate.ready { color:#a89a83; }
+  .quiz-gate .qg-btn { display:inline-block; margin-top:10px; background:none; border:1px solid rgba(196,148,58,.5); color:#c4943a; font-family:inherit; font-size:1rem; letter-spacing:.1em; padding:9px 26px; cursor:pointer; transition:all .3s ease; }
+  .quiz-gate .qg-btn:hover:not(:disabled) { background:rgba(196,148,58,.12); box-shadow:0 0 24px rgba(196,148,58,.15); }
+  .quiz-gate .qg-btn:disabled { opacity:.4; cursor:not-allowed; }
+  .quiz-body { display:none; }
+  .quiz-body.show { display:block; }
+  .q-progress { text-align:center; font-size:.88rem; color:#8d8172; letter-spacing:.14em; margin-bottom:12px; }
+  .q-text { text-align:center; font-size:1.25rem; color:#f3ead8; line-height:1.5; }
+  .q-opts { display:flex; flex-direction:column; gap:10px; margin-top:18px; max-width:520px; margin-left:auto; margin-right:auto; }
+  .q-opt { border:1px solid rgba(196,148,58,.35); background:rgba(24,19,16,.55); color:#e9e2d5; font-family:inherit; font-size:1.05rem; padding:11px 16px; cursor:pointer; text-align:left; transition:all .25s ease; }
+  .q-opt:hover:not(:disabled) { border-color:rgba(196,148,58,.75); background:rgba(38,30,26,.7); }
+  .q-opt:disabled { cursor:default; }
+  .q-opt.correct { border-color:#6edcaf; color:#baf3d8; background:rgba(110,220,175,.08); }
+  .q-opt.wrong { border-color:#c94a52; color:#eebfc3; background:rgba(176,24,35,.1); }
+  .q-result { text-align:center; margin-top:20px; }
+  .q-result .qr-score { font-family:'Noto Serif SC',serif; font-size:1.8rem; color:#c4943a; }
+  .q-result .qr-msg { margin-top:6px; color:#bfb5a4; font-style:italic; }
+  .qr-btn { margin-top:14px; background:none; border:1px solid rgba(196,148,58,.5); color:#c4943a; font-family:inherit; font-size:1rem; letter-spacing:.1em; padding:9px 26px; cursor:pointer; transition:all .3s ease; }
+  .qr-btn:hover { background:rgba(196,148,58,.12); }
+  .lv-next { text-align:center; margin-top:26px; display:none; }
+  .lv-next.show { display:block; }
+  .lv-next button { background:linear-gradient(150deg, rgba(176,24,35,.25), rgba(141,16,25,.35)); border:1px solid rgba(196,148,58,.55); color:#f5ead6; font-family:inherit; font-size:1.1rem; letter-spacing:.1em; padding:12px 34px; cursor:pointer; transition:all .3s ease; }
+  .lv-next button:hover { box-shadow:0 0 30px rgba(176,24,35,.35); transform:translateY(-2px); }
+  .future-title { margin-top:34px; width:min(1060px, 96vw); display:flex; align-items:center; gap:12px; }
+  .future-title .ft-hz { font-family:'Noto Serif SC',serif; font-weight:600; color:#8d8172; letter-spacing:.2em; font-size:.98rem; }
+  .future-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, rgba(196,148,58,.25), transparent); }
+  .lessons { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:14px; width:min(1060px, 96vw); }
+  .lesson { border:1px solid rgba(196,148,58,.18); background:rgba(24,19,16,.5); padding:14px 18px 12px; position:relative; opacity:.75; }
+  .lesson .num { position:absolute; top:12px; right:14px; font-family:'Noto Serif SC',serif; font-weight:900; font-size:.85rem; color:#8d1019; background:rgba(176,24,35,.14); border:1px solid rgba(196,148,58,.25); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .lesson .hz { font-family:'Noto Serif SC',serif; font-weight:600; font-size:1.25rem; color:#a85960; }
+  .lesson .py { font-style:italic; color:#8a7a5e; font-size:.88rem; margin-top:2px; }
+  .lesson .ru { font-size:.98rem; color:#cfc6b6; margin-top:4px; }
+  .lesson .topic { margin-top:6px; font-size:.88rem; color:#8d8172; line-height:1.5; }
+  .lesson .pages { margin-top:8px; font-size:.78rem; color:#6e6355; letter-spacing:.08em; font-style:italic; }
+  .soon { margin-top:8px; width:min(1060px, 96vw); text-align:center; font-style:italic; color:#8d8172; font-size:.95rem; letter-spacing:.06em; }
   .soon .hz { font-family:'Noto Serif SC',serif; color:#9d8f79; }
-
-  .back-home {
-    margin-top:18px;
-    color:#a89a83; text-decoration:none; font-size:1.05rem;
-    letter-spacing:.1em; border:1px solid transparent;
-    padding:6px 10px; transition:all .3s ease;
-  }
+  .back-home { margin-top:18px; color:#a89a83; text-decoration:none; font-size:1.05rem; letter-spacing:.1em; border:1px solid transparent; padding:6px 10px; transition:all .3s ease; }
   .back-home:hover { color:#f5ead6; border-color:rgba(196,148,58,.5); }
   .back-home .arrow { color:#c4943a; transition:transform .25s ease; display:inline-block; }
   .back-home:hover .arrow { transform:translateX(-4px); }
-
-  /* ===== Появление ===== */
-  .fade-in {
-    opacity:0; transform:translateY(18px); filter:blur(6px);
-    transition:opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1), filter .9s ease;
-  }
+  .fade-in { opacity:0; transform:translateY(18px); filter:blur(6px); transition:opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1), filter .9s ease; }
   .fade-in.visible { opacity:1; transform:translateY(0); filter:blur(0); }
-
-  @media (max-width:560px) {
-    .lessons { grid-template-columns:1fr; }
+  @media (max-width:640px) {
+    .path-node { min-width:130px; padding:11px 12px 10px; }
+    .word-card { height:118px; }
   }
-
-  /* ===== Музыкальная кнопка ===== */
-  .music-btn {
-    position:fixed; bottom:18px; left:18px;
-    width:38px; height:38px;
-    background:rgba(24,19,16,.6);
-    border:1px solid rgba(196,148,58,.35);
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    z-index:100;
-    backdrop-filter:blur(8px);
-    transition:all .3s ease;
-  }
-  .music-btn:hover {
-    border-color:rgba(196,148,58,.7);
-    background:rgba(38,30,26,.75);
-  }
+  .music-btn { position:fixed; bottom:18px; left:18px; width:38px; height:38px; background:rgba(24,19,16,.6); border:1px solid rgba(196,148,58,.35); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:100; backdrop-filter:blur(8px); transition:all .3s ease; }
+  .music-btn:hover { border-color:rgba(196,148,58,.7); background:rgba(38,30,26,.75); }
   .music-btn svg { width:18px; height:18px; color:#c4943a; }
-  .music-btn .wave { animation:wavePulse 1.6s ease-in-out infinite; transform-origin:center; }
-  .music-btn.paused .wave { animation:none; opacity:.35; }
-  @keyframes wavePulse {
-    0%,100% { opacity:.7; transform:scaleY(.7); }
-    50%     { opacity:1;  transform:scaleY(1); }
-  }
   .music-btn.playing .icon-off { display:none; }
   .music-btn:not(.playing) .icon-on { display:none; }
 </style>
 </head>
 <body>
-
   <div class="layer mist"></div>
   <div class="layer grain"></div>
-
   <div class="header fade-in">
     <div class="header-seal">学</div>
     <h1>课程 · Уроки</h1>
-    <div class="sub">Standard Course HSK 1 — пятнадцать шагов</div>
+    <div class="sub">Standard Course HSK 1 — прохождение по порядку</div>
     <div class="divider"><span class="gem"></span></div>
   </div>
-
-  <div class="lessons" id="lessons"></div>
-
-  <div class="soon fade-in">
-    Содержание каждого урока будет добавлено из учебника — <span class="hz">敬请期待</span>
-  </div>
-
-  <a class="back-home fade-in" href="index.html">
-    <span class="arrow">←</span> На главную
-  </a>
-
+  <div class="path-bar fade-in" id="pathBar"></div>
+  <div class="lesson-view fade-in" id="lessonView" style="display:none"></div>
+  <div class="future-title fade-in" id="futureTitle" style="display:none"><span class="ft-hz">后续课程 · Дальше по учебнику</span></div>
+  <div class="lessons fade-in" id="futureLessons"></div>
+  <div class="soon fade-in">Уроки 6–15 будут открыты после прохождения первых пяти — <span class="hz">敬请期待</span></div>
+  <a class="back-home fade-in" href="index.html"><span class="arrow">←</span> На главную</a>
 <script>
-// ===== Уроки Standard Course HSK 1 =====
-const LESSONS = [
-  { n:1,  hz:'你好',           py:'Nǐ hǎo',                    ru:'Здравствуй',                       topic:'Первые приветствия и прощания.',                        words:['你好','再见'],            pages:'стр. 22–27' },
-  { n:2,  hz:'谢谢你',         py:'Xièxie nǐ',                 ru:'Спасибо тебе',                     topic:'Вежливые слова: благодарность и ответ.',                words:['谢谢','不客气'],          pages:'стр. 28–33' },
-  { n:3,  hz:'你叫什么名字',   py:'Nǐ jiào shénme míngzi',     ru:'Как тебя зовут',                   topic:'Знакомство: имя и местоимения.',                        words:['名字','叫'],              pages:'стр. 34–41' },
-  { n:4,  hz:'她是我的汉语老师', py:'Tā shì wǒ de hànyǔ lǎoshī', ru:'Она моя учительница китайского',   topic:'Представление людей и профессий.',                      words:['老师','汉语'],            pages:'стр. 42–49' },
-  { n:5,  hz:'她女儿今年二十岁', py:'Tā nǚ\'ér jīnnián èrshí suì', ru:'Её дочери в этом году двадцать', topic:'Возраст и члены семьи.',                                words:['女儿','岁'],              pages:'стр. 50–59' },
-  { n:6,  hz:'我会说汉语',     py:'Wǒ huì shuō hànyǔ',         ru:'Я умею говорить по-китайски',      topic:'Умения и языки.',                                       words:['会','说'],                pages:'стр. 60–67' },
-  { n:7,  hz:'今天几号',       py:'Jīntiān jǐ hào',            ru:'Какое сегодня число',              topic:'Дни недели и даты.',                                    words:['今天','星期'],            pages:'стр. 68–75' },
-  { n:8,  hz:'我想喝茶',       py:'Wǒ xiǎng hē chá',           ru:'Я хочу выпить чаю',                topic:'Желания и напитки.',                                    words:['想','喝茶'],              pages:'стр. 76–83' },
-  { n:9,  hz:'你儿子在哪儿工作', py:'Nǐ érzi zài nǎr gōngzuò',   ru:'Где работает твой сын',            topic:'Место работы и профессии.',                             words:['儿子','工作'],            pages:'стр. 84–91' },
-  { n:10, hz:'我能坐这儿吗',   py:'Wǒ néng zuò zhèr ma',       ru:'Можно мне сесть здесь',            topic:'Просьбы и разрешения.',                                 words:['能','坐'],                pages:'стр. 92–101' },
-  { n:11, hz:'现在几点',       py:'Xiànzài jǐ diǎn',           ru:'Который час сейчас',               topic:'Время на часах.',                                       words:['现在','点'],              pages:'стр. 102–109' },
-  { n:12, hz:'明天天气怎么样', py:'Míngtiān tiānqì zěnmeyàng', ru:'Какая завтра будет погода',        topic:'Погода и планы.',                                       words:['明天','天气'],            pages:'стр. 110–117' },
-  { n:13, hz:'他在学做中国菜呢', py:'Tā zài xué zuò Zhōngguó cài ne', ru:'Он учится готовить китайские блюда', topic:'Действие в процессе.',                         words:['学','做菜'],              pages:'стр. 118–123' },
-  { n:14, hz:'她买了不少衣服', py:'Tā mǎile bùshǎo yīfu',      ru:'Она купила немало одежды',         topic:'Покупки и одежда.',                                     words:['买','衣服'],              pages:'стр. 124–131' },
-  { n:15, hz:'我是坐飞机来的', py:'Wǒ shì zuò fēijī lái de',   ru:'Я прилетел на самолёте',           topic:'Транспорт и рассказ о себе.',                           words:['坐飞机','来'],            pages:'стр. 132–139' }
+const LESSONS = {
+  1: {
+    hz:'你好', py:'Nǐ hǎo', ru:'Здравствуй',
+    intro:'Первый шаг: приветствия и прощания. В этом уроке — четыре тона пиньиня и первые слова, без которых не начинается ни один разговор.',
+    words:[
+      { h:'你好', p:'nǐ hǎo', t:'здравствуй' },
+      { h:'你',   p:'nǐ',     t:'ты' },
+      { h:'您',   p:'nín',    t:'Вы (вежливо)' },
+      { h:'好',   p:'hǎo',    t:'хороший; хорошо' },
+      { h:'你们', p:'nǐmen',  t:'вы (мн. ч.)' },
+      { h:'再见', p:'zàijiàn', t:'до свидания' }
+    ],
+    dialog:[
+      { w:'尼克 Níkè',  zh:'你好！',            p:'Nǐ hǎo!',           ru:'Привет!' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'你好！',   p:'Nǐ hǎo!',           ru:'Привет!' },
+      { w:'尼克 Níkè',  zh:'老师好！',          p:'Lǎoshī hǎo!',       ru:'Здравствуйте, учитель!' },
+      { w:'王老师 Wáng lǎoshī', zh:'你们好！',  p:'Nǐmen hǎo!',        ru:'Здравствуйте, ребята!' },
+      { w:'尼克 Níkè',  zh:'王小云，再见！',    p:'Wáng Xiǎoyún, zàijiàn!', ru:'До свидания, Ван Сяоюнь!' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'再见！',   p:'Zàijiàn!',          ru:'До свидания!' }
+    ],
+    grammar:[
+      { hz:'你好', t:'Универсальное приветствие', b:'你好 — «здравствуй». Подходит в любое время суток и почти в любой ситуации. В ответ говорят тем же: 你好！', ex:[
+        ['老师，你好！','Lǎoshī, nǐ hǎo!','Здравствуйте, учитель!']
+      ]},
+      { hz:'您', t:'Вежливое «Вы»', b:'您 — вежливая форма «ты». Её используют с учителями, старшими и незнакомыми людьми.', ex:[
+        ['您好，王老师！','Nín hǎo, Wáng lǎoshī!','Здравствуйте, учитель Ван!']
+      ]},
+      { hz:'你们', t:'Множественное число: 们', b:'Частица 们 делает местоимение множественным: 你 → 你们 («вы»). Приветствие группе: 你们好！', ex:[
+        ['你们好！','Nǐmen hǎo!','Здравствуйте, ребята!']
+      ]},
+      { hz:'四个声调', t:'Четыре тона', b:'Слог в китайском языке имеет тон, и тон меняет смысл: mā 妈 «мама», má 麻 «конопля», mǎ 马 «лошадь», mà 骂 «ругать». Тон указывается в пиньине над гласной: nǐ hǎo — оба слога третьего тона.', ex:[
+        ['mā má mǎ mà','мā má mǎ mà','мама — конопля — лошадь — ругать']
+      ]},
+      { hz:'再见', t:'Прощание', b:'再见 буквально «снова увидеться» — стандартное «до свидания». Между знакомыми можно просто сказать 再见 в конце встречи.', ex:[
+        ['老师，再见！','Lǎoshī, zàijiàn!','До свидания, учитель!']
+      ]}
+    ],
+    quiz:[
+      { q:'Как переводится 你好？', opts:['Здравствуй','До свидания','Спасибо','Извини'], a:'Здравствуй' },
+      { q:'Как сказать «Вы» вежливо (учителю, старшим)?', opts:['你','您','你们','他'], a:'您' },
+      { q:'«До свидания» по-китайски:', opts:['再见','你好','谢谢','不客气'], a:'再见' },
+      { q:'你们好 — это приветствие…', opts:['одного человека','группы людей','вопрос','прощание'], a:'группы людей' },
+      { q:'Сколько тонов в китайском языке?', opts:['Два','Три','Четыре','Пять'], a:'Четыре' }
+    ]
+  },
+  2: {
+    hz:'谢谢你', py:'Xièxie nǐ', ru:'Спасибо тебе',
+    intro:'Вежливость — ключ к китайскому этикету. Урок о благодарности, извинениях и первой тональной песне: 不 меняет тон!',
+    words:[
+      { h:'谢谢',   p:'xièxie',    t:'спасибо' },
+      { h:'不客气', p:'bú kèqi',   t:'не за что' },
+      { h:'对不起', p:'duìbuqǐ',   t:'извини(те)' },
+      { h:'没关系', p:'méi guānxi', t:'ничего страшного' },
+      { h:'不',     p:'bù',        t:'не; нет' }
+    ],
+    dialog:[
+      { w:'大卫 Dàwèi', zh:'谢谢！',       p:'Xièxie!',       ru:'Спасибо!' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'不客气！', p:'Bú kèqi!', ru:'Не за что!' },
+      { w:'大卫 Dàwèi', zh:'对不起！',   p:'Duìbuqǐ!',      ru:'Извини!' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'没关系！', p:'Méi guānxi!', ru:'Ничего страшного!' },
+      { w:'大卫 Dàwèi', zh:'谢谢您，老师！', p:'Xièxie nín, lǎoshī!', ru:'Спасибо Вам, учитель!' },
+      { w:'王老师 Wáng lǎoshī', zh:'再见！', p:'Zàijiàn!',   ru:'До свидания!' }
+    ],
+    grammar:[
+      { hz:'谢谢 → 不客气', t:'Пара благодарности', b:'На 谢谢 («спасибо») принято отвечать 不客气 («не за что», «пожалуйста»). Можно усилить: 谢谢你、谢谢您 — указав, кому благодарны.', ex:[
+        ['谢谢你的书。','Xièxie nǐ de shū.','Спасибо за твою книгу.']
+      ]},
+      { hz:'对不起 → 没关系', t:'Пара извинения', b:'对不起 — «извини(те)», а вежливый ответ 没关系 — «ничего страшного». Так гасят неловкость в диалоге.', ex:[
+        ['对不起！——没关系。','Duìbuqǐ! —— Méi guānxi.','Извини! — Ничего страшного.']
+      ]},
+      { hz:'不的变调', t:'Тональная песня 不', b:'不 читается bù (4-й тон), но перед слогом 4-го тона меняется на bú (2-й тон): 不客气 → bú kèqi. Это то же слово, просто тональное приспособление для удобства произношения.', ex:[
+        ['不是','bú shì','не является (是 — 4-й тон)'],
+        ['不去','bù qù','не идти (去 — 4-й тон)']
+      ]}
+    ],
+    quiz:[
+      { q:'Как переводится 谢谢？', opts:['Спасибо','Не за что','Извини','Ничего страшного'], a:'Спасибо' },
+      { q:'Что отвечают на 谢谢？', opts:['不客气','对不起','再见','你好'], a:'不客气' },
+      { q:'Как переводится 对不起？', opts:['Извини(те)','Спасибо','Здравствуйте','Пока'], a:'Извини(те)' },
+      { q:'Как переводится 没关系？', opts:['Ничего страшного','Не за что','До свидания','Привет'], a:'Ничего страшного' },
+      { q:'不 перед 4-м тоном читается…', opts:['bù','bú','bū','bí'], a:'bú' }
+    ]
+  },
+  3: {
+    hz:'你叫什么名字', py:'Nǐ jiào shénme míngzi', ru:'Как тебя зовут',
+    intro:'Знакомство: как зовут, кто ты, чем занимаешься. Здесь появляется главный закон китайского предложения — строгий порядок слов.',
+    words:[
+      { h:'叫',   p:'jiào',      t:'звать; называться' },
+      { h:'什么', p:'shénme',    t:'что' },
+      { h:'名字', p:'míngzi',    t:'имя' },
+      { h:'同学', p:'tóngxué',   t:'одногруппник; одноклассник' },
+      { h:'老师', p:'lǎoshī',    t:'учитель' },
+      { h:'学生', p:'xuésheng',  t:'ученик; студент' },
+      { h:'认识', p:'rènshi',    t:'знать; быть знакомым' },
+      { h:'高兴', p:'gāoxìng',   t:'радостный; приятно' },
+      { h:'我',   p:'wǒ',        t:'я' }
+    ],
+    dialog:[
+      { w:'尼克 Níkè', zh:'你好！我叫尼克。你叫什么名字？', p:'Nǐ hǎo! Wǒ jiào Níkè. Nǐ jiào shénme míngzi?', ru:'Привет! Меня зовут Ник. Как тебя зовут?' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'我叫王小云。', p:'Wǒ jiào Wáng Xiǎoyún.', ru:'Меня зовут Ван Сяоюнь.' },
+      { w:'尼克 Níkè', zh:'很高兴认识你！', p:'Hěn gāoxìng rènshi nǐ!', ru:'Очень приятно познакомиться!' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'我也很高兴认识你！', p:'Wǒ yě hěn gāoxìng rènshi nǐ!', ru:'Мне тоже очень приятно познакомиться!' },
+      { w:'尼克 Níkè', zh:'她是我的同学。', p:'Tā shì wǒ de tóngxué.', ru:'Она моя одногруппница.' }
+    ],
+    grammar:[
+      { hz:'语序', t:'Порядок слов: кто — что делает', b:'Китайское предложение строится строго: подлежащее + сказуемое + дополнение. 我叫尼克 — дословно «я зовусь Ником». Порядок никогда не меняется.', ex:[
+        ['我叫王小云。','Wǒ jiào Wáng Xiǎoyún.','Меня зовут Ван Сяоюнь.']
+      ]},
+      { hz:'什么', t:'Вопрос со словом «что»', b:'Вопросительное слово 什么 ставится на место ответа в предложении, а не выносится вперёд, как в английском. 你叫什么名字 — дословно «ты зовёшься какое имя».', ex:[
+        ['你叫什么名字？','Nǐ jiào shénme míngzi?','Как тебя зовут?']
+      ]},
+      { hz:'很高兴认识你', t:'Формула знакомства', b:'很高兴认识你 — «очень приятно познакомиться». В ответ: 我也很高兴认识你 («мне тоже»). 注意: 很 здесь почти не переводится, это часть формулы.', ex:[
+        ['我也很高兴认识你！','Wǒ yě hěn gāoxìng rènshi nǐ!','Мне тоже очень приятно познакомиться!']
+      ]},
+      { hz:'姓名', t:'Китайское имя: фамилия первая', b:'В китайском имени фамилия идёт первой: 王小云 = 王 Wáng (фамилия) + 小云 Xiǎoyún (имя). К учителю обращаются 姓 + 老师: 王老师.', ex:[
+        ['王小云是我的同学。','Wáng Xiǎoyún shì wǒ de tóngxué.','Ван Сяоюнь — моя одногруппница.']
+      ]}
+    ],
+    quiz:[
+      { q:'你叫什么名字？ — о чём спрашивают?', opts:['Как тебя зовут?','Сколько тебе лет?','Где ты учишься?','Кто это?'], a:'Как тебя зовут?' },
+      { q:'Как переводится 名字？', opts:['Имя','Учитель','Одногруппник','Знать'], a:'Имя' },
+      { q:'很高兴认识你 — это…', opts:['Очень приятно познакомиться','Как твоё имя?','Спасибо тебе','Ты студент?'], a:'Очень приятно познакомиться' },
+      { q:'Порядок слов в 我叫尼克。:', opts:['Подлежащее + сказуемое + дополнение','Сказуемое + подлежащее','Вопрос в конце предложения','Предложение без глагола'], a:'Подлежащее + сказуемое + дополнение' },
+      { q:'В имени 王小云 фамилия — это…', opts:['王 (первый знак)','小云','средний знак','в китайских именах нет фамилий'], a:'王 (первый знак)' }
+    ]
+  },
+  4: {
+    hz:'她是我的汉语老师', py:'Tā shì wǒ de hànyǔ lǎoshī', ru:'Она моя учительница китайского',
+    intro:'Урок о том, кто есть кто: глагол-связка 是, вопросы на 吗, отрицание 不 и притяжательная частица 的 — каркас любого простого разговора.',
+    words:[
+      { h:'她',   p:'tā',      t:'она' },
+      { h:'他',   p:'tā',      t:'он' },
+      { h:'是',   p:'shì',     t:'быть; являться' },
+      { h:'的',   p:'de',      t:'частица принадлежности' },
+      { h:'吗',   p:'ma',      t:'вопросительная частица' },
+      { h:'不',   p:'bù',      t:'не' },
+      { h:'汉语', p:'hànyǔ',   t:'китайский язык' },
+      { h:'呢',   p:'ne',      t:'а…? (тебе? тебе?)' },
+      { h:'谁',   p:'shéi',    t:'кто' }
+    ],
+    dialog:[
+      { w:'尼克 Níkè', zh:'她是我的汉语老师。', p:'Tā shì wǒ de hànyǔ lǎoshī.', ru:'Она моя учительница китайского.' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'她是王老师吗？', p:'Tā shì Wáng lǎoshī ma?', ru:'Она учитель Ван?' },
+      { w:'尼克 Níkè', zh:'不，她不是王老师，她是李老师。', p:'Bù, tā bú shì Wáng lǎoshī, tā shì Lǐ lǎoshī.', ru:'Нет, она не учитель Ван, она учитель Ли.' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'他是谁？', p:'Tā shì shéi?', ru:'А он кто?' },
+      { w:'尼克 Níkè', zh:'他是我的同学。你呢？', p:'Tā shì wǒ de tóngxué. Nǐ ne?', ru:'Он мой одногруппник. А ты?' }
+    ],
+    grammar:[
+      { hz:'是字句', t:'Связка 是: «А — это Б»', b:'В китайском, в отличие от русского, связка 是 обязательна в настоящем времени: 我是学生 — «я (есть) студент». Но 是 соединяет только существительные, перед глаголами она не нужна.', ex:[
+        ['她是我的汉语老师。','Tā shì wǒ de hànyǔ lǎoshī.','Она моя учительница китайского.']
+      ]},
+      { hz:'…吗？', t:'Общий вопрос: + 吗', b:'Чтобы превратить утверждение в вопрос «да/нет», просто добавь 吗 в конец: 你是老师吗？ — «Ты учитель?». Порядок слов не меняется.', ex:[
+        ['她是王老师吗？','Tā shì Wáng lǎoshī ma?','Она учитель Ван?']
+      ]},
+      { hz:'不', t:'Отрицание 不', b:'不 ставится перед глаголом: 是 → 不是 «не являться». В ответе на вопрос с 吗 отрицание начинается с 不: 不，她不是王老师。', ex:[
+        ['他不是老师。','Tā bú shì lǎoshī.','Он не учитель.']
+      ]},
+      { hz:'的', t:'Принадлежность: 的', b:'Частица 的 прикрепляется к обладателю: 我 + 的 + 老师 = 我的老师 «мой учитель». Работает и с людьми, и с вещами.', ex:[
+        ['我的老师姓李。','Wǒ de lǎoshī xìng Lǐ.','Мою учительницу зовут (по фамилии) Ли.']
+      ]},
+      { hz:'呢 / 谁', t:'你呢？ и 他是谁?', b:'呢 в конце — вопрос «а …?»: 你呢？ «А ты?». 谁 — «кто», стоит на месте ответа: 他是谁？ «Он кто?». 注意: 他 и 她 звучат одинаково tā, различие только на письме.', ex:[
+        ['他是谁？','Tā shì shéi?','Кто он?'],
+        ['你呢？','Nǐ ne?','А ты?']
+      ]}
+    ],
+    quiz:[
+      { q:'她是我的汉语老师 — перевод:', opts:['Она моя учительница китайского','Он мой студент','Это её учитель','Моя учительница — китаянка'], a:'Она моя учительница китайского' },
+      { q:'Частица 吗 образует…', opts:['общий вопрос из утверждения','отрицание','принадлежность','множественное число'], a:'общий вопрос из утверждения' },
+      { q:'他不是老师 — перевод:', opts:['Он не учитель','Он учитель?','Он учитель','Она не учитель'], a:'Он не учитель' },
+      { q:'的 в 我的老师 показывает…', opts:['принадлежность («мой учитель»)','вопрос','отрицание','время'], a:'принадлежность («мой учитель»)' },
+      { q:'你呢？ означает…', opts:['А ты?','Кто ты?','Где ты?','Ты здесь?'], a:'А ты?' }
+    ]
+  },
+  5: {
+    hz:'她女儿今年二十岁', py:'Tā nǚ’ér jīnnián èrshí suì', ru:'Её дочери в этом году двадцать',
+    intro:'Семья и возраст: числа, члены семьи, счётное слово 口 и конструкция 有. После этого урока ты сможешь рассказать о своей семье.',
+    words:[
+      { h:'家',   p:'jiā',      t:'семья; дом' },
+      { h:'有',   p:'yǒu',      t:'иметь; есть' },
+      { h:'几',   p:'jǐ',       t:'сколько' },
+      { h:'口',   p:'kǒu',      t:'сч. слово (члены семьи)' },
+      { h:'爸爸', p:'bàba',     t:'папа' },
+      { h:'妈妈', p:'māma',     t:'мама' },
+      { h:'哥哥', p:'gēge',     t:'старший брат' },
+      { h:'姐姐', p:'jiějie',   t:'старшая сестра' },
+      { h:'弟弟', p:'dìdi',     t:'младший брат' },
+      { h:'妹妹', p:'mèimei',   t:'младшая сестра' },
+      { h:'女儿', p:'nǚ’ér', t:'дочь' },
+      { h:'儿子', p:'érzi',     t:'сын' },
+      { h:'两',   p:'liǎng',    t:'два (перед сч. словом)' },
+      { h:'和',   p:'hé',       t:'и' },
+      { h:'岁',   p:'suì',      t:'лет (о возрасте)' },
+      { h:'今年', p:'jīnnián',  t:'в этом году' },
+      { h:'狗',   p:'gǒu',      t:'собака' }
+    ],
+    dialog:[
+      { w:'尼克 Níkè', zh:'你家有几口人？', p:'Nǐ jiā yǒu jǐ kǒu rén?', ru:'Сколько человек в твоей семье?' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'我家有五口人：爸爸、妈妈、哥哥、我和妹妹。', p:'Wǒ jiā yǒu wǔ kǒu rén: bàba, māma, gēge, wǒ hé mèimei.', ru:'В моей семье пять человек: папа, мама, старший брат, я и младшая сестра.' },
+      { w:'尼克 Níkè', zh:'你妹妹今年几岁？', p:'Nǐ mèimei jīnnián jǐ suì?', ru:'Сколько лет твоей младшей сестре в этом году?' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'她今年二十岁。', p:'Tā jīnnián èrshí suì.', ru:'Ей в этом году двадцать.' },
+      { w:'尼克 Níkè', zh:'你有狗吗？', p:'Nǐ yǒu gǒu ma?', ru:'У тебя есть собака?' },
+      { w:'王小云 Wáng Xiǎoyún', zh:'有，我家的狗很好。', p:'Yǒu, wǒ jiā de gǒu hěn hǎo.', ru:'Есть, собака в нашей семье очень хорошая.' }
+    ],
+    grammar:[
+      { hz:'有', t:'有: «иметь» и «есть»', b:'Конструкция 有 означает наличие: 我有妹妹 — «у меня есть младшая сестра». В вопросе с 有 можно ответить просто 有 («есть») или 没有 («нет»).', ex:[
+        ['我有弟弟。','Wǒ yǒu dìdi.','У меня есть младший брат.']
+      ]},
+      { hz:'几口人', t:'Счётное слово 口', b:'Члены семьи считаются словом 口: 三口人 «три человека (в семье)». Вопрос: 你家有几口人？ — сколько людей в твоей семье?', ex:[
+        ['我家有五口人。','Wǒ jiā yǒu wǔ kǒu rén.','В моей семье пять человек.']
+      ]},
+      { hz:'两和二', t:'两 liǎng против 二 èr', b:'Перед счётным словом «два» — 两: 两个人. 二 используется в составных числах: 二十 èrshí «двадцать», 二十二 «двадцать два».', ex:[
+        ['我有两个哥哥。','Wǒ yǒu liǎng gè gēge.','У меня два старших брата.'],
+        ['她今年二十岁。','Tā jīnnián èrshí suì.','Ей в этом году двадцать.']
+      ]},
+      { hz:'岁', t:'Возраст: …岁', b:'Возраст выражается числом + 岁: 我二十岁 «мне двадцать лет». Вопрос о возрасте ребёнка: 几岁？', ex:[
+        ['我今年十八岁。','Wǒ jīnnián shíbā suì.','В этом году мне восемнадцать.']
+      ]},
+      { hz:'和', t:'和: «и» между словами', b:'和 соединяет однородные члены (существительные): 爸爸和妈妈 «папа и мама». Между целыми предложениями 和 обычно не употребляется.', ex:[
+        ['我爸爸和妈妈都在家。','Wǒ bàba hé māma dōu zài jiā.','Мой папа и мама оба дома.']
+      ]}
+    ],
+    quiz:[
+      { q:'你家有几口人？ — о чём спрашивают?', opts:['Сколько человек в твоей семье?','Сколько тебе лет?','У тебя есть собака?','Где твой дом?'], a:'Сколько человек в твоей семье?' },
+      { q:'女儿 — это…', opts:['дочь','сын','младшая сестра','собака'], a:'дочь' },
+      { q:'Счётное слово для членов семьи:', opts:['口','个','本','岁'], a:'口' },
+      { q:'Перед счётным словом «два» — это…', opts:['两 liǎng','二 èr','三 sān','十 shí'], a:'两 liǎng' },
+      { q:'和 означает…', opts:['и','или','не','тоже'], a:'и' }
+    ]
+  }
+};
+
+const FUTURE = [
+  { n:6,  hz:'我会说汉语',       py:'Wǒ huì shuō hànyǔ',           ru:'Я умею говорить по-китайски',    topic:'Умения и языки.',        pages:'стр. 60–67' },
+  { n:7,  hz:'今天几号',         py:'Jīntiān jǐ hào',              ru:'Какое сегодня число',            topic:'Дни недели и даты.',     pages:'стр. 68–75' },
+  { n:8,  hz:'我想喝茶',         py:'Wǒ xiǎng hē chá',             ru:'Я хочу выпить чаю',              topic:'Желания и напитки.',     pages:'стр. 76–83' },
+  { n:9,  hz:'你儿子在哪儿工作', py:'Nǐ érzi zài nǎr gōngzuò',     ru:'Где работает твой сын',          topic:'Место работы.',          pages:'стр. 84–91' },
+  { n:10, hz:'我能坐这儿吗',     py:'Wǒ néng zuò zhèr ma',         ru:'Можно мне сесть здесь',          topic:'Просьбы и разрешения.',  pages:'стр. 92–101' },
+  { n:11, hz:'现在几点',         py:'Xiànzài jǐ diǎn',             ru:'Который час сейчас',             topic:'Время на часах.',        pages:'стр. 102–109' },
+  { n:12, hz:'明天天气怎么样',   py:'Míngtiān tiānqì zěnmeyàng',   ru:'Какая завтра будет погода',      topic:'Погода и планы.',        pages:'стр. 110–117' },
+  { n:13, hz:'他在学做中国菜呢', py:'Tā zài xué zuò Zhōngguó cài ne', ru:'Он учится готовить китайские блюда', topic:'Действие в процессе.', pages:'стр. 118–123' },
+  { n:14, hz:'她买了不少衣服',   py:'Tā mǎile bùshǎo yīfu',        ru:'Она купила немало одежды',       topic:'Покупки и одежда.',      pages:'стр. 124–131' },
+  { n:15, hz:'我是坐飞机来的',   py:'Wǒ shì zuò fēijī lái de',     ru:'Я прилетел на самолёте',         topic:'Транспорт и рассказ о себе.', pages:'стр. 132–139' }
 ];
 
-const wrap = document.getElementById('lessons');
-for (const L of LESSONS) {
+const STORE_KEY = 'hsk-lessons-progress-v2';
+let state = { learned:{}, passed:{}, opened:1 };
+try {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (raw) state = Object.assign(state, JSON.parse(raw));
+} catch(e) {}
+function saveState(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {} }
+function isUnlocked(n){ return n === 1 || !!state.passed[n-1]; }
+
+const pathBar = document.getElementById('pathBar');
+const lessonView = document.getElementById('lessonView');
+const futureTitle = document.getElementById('futureTitle');
+const futureLessons = document.getElementById('futureLessons');
+
+let currentLesson = null;
+
+function renderPath(){
+  pathBar.innerHTML = '';
+  for (let n = 1; n <= 5; n++) {
+    const L = LESSONS[n];
+    const node = document.createElement('div');
+    const unlocked = isUnlocked(n);
+    const passed = !!state.passed[n];
+    node.className = 'path-node ' + (passed ? 'done' : unlocked ? 'open' : 'locked');
+    const status = passed ? '✓ пройден' : unlocked ? 'открыт' : 'закрыт';
+    node.innerHTML =
+      (unlocked ? '' : '<span class="lock">🔒</span>') +
+      '<div class="pn-num">УРОК ' + n + '</div>' +
+      '<div class="pn-hz">' + L.hz + '</div>' +
+      '<div class="pn-ru">' + L.ru + '</div>' +
+      '<div class="pn-status">' + status + '</div>';
+    if (unlocked) node.addEventListener('click', () => openLesson(n));
+    pathBar.appendChild(node);
+  }
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function openLesson(n){
+  currentLesson = n;
+  const L = LESSONS[n];
+  renderLessonView(n, L);
+  lessonView.style.display = 'block';
+  lessonView.scrollIntoView({ behavior:'smooth', block:'start' });
+  futureTitle.style.display = 'none';
+  futureLessons.style.display = 'none';
+  document.querySelector('.soon').style.display = 'none';
+}
+
+function backToPath(){
+  currentLesson = null;
+  lessonView.style.display = 'none';
+  renderPath();
+  futureTitle.style.display = 'flex';
+  futureLessons.style.display = 'grid';
+  document.querySelector('.soon').style.display = 'block';
+}
+
+function renderLessonView(n, L){
+  const learnedSet = state.learned[n] || {};
+  const learnedCount = L.words.filter(w => learnedSet[w.h]).length;
+  const allLearned = learnedCount === L.words.length;
+  const passed = !!state.passed[n];
+
+  lessonView.innerHTML =
+    '<div class="lv-top">' +
+      '<button class="lv-back" id="lvBack">← К пути уроков</button>' +
+      '<div class="wp-label">Урок ' + n + ' из 15</div>' +
+    '</div>' +
+    '<div class="lv-title">' +
+      '<div class="hz">' + esc(L.hz) + '</div>' +
+      '<div class="py">' + esc(L.py) + '</div>' +
+      '<div class="ru">' + esc(L.ru) + '</div>' +
+      '<div class="intro">' + esc(L.intro) + '</div>' +
+    '</div>' +
+
+    '<div class="sec" id="secWords">' +
+      '<div class="sec-head"><span class="sh-hz">生词</span><span class="sh-ru">Слова урока — нажми на карточку, чтобы увидеть перевод</span></div>' +
+      '<div class="words-grid" id="wordsGrid"></div>' +
+      '<div class="words-progress">' +
+        '<div class="wp-bar"><div class="wp-fill" id="wpFill"></div></div>' +
+        '<div class="wp-label" id="wpLabel"></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="sec">' +
+      '<div class="sec-head"><span class="sh-hz">对话</span><span class="sh-ru">Диалоги урока</span></div>' +
+      '<div class="dlg">' +
+        L.dialog.map((d, i) =>
+          '<div class="dlg-line' + (i % 2 ? ' alt' : '') + '">' +
+            '<div class="dlg-who">' + esc(d.w) + '</div>' +
+            '<div class="dlg-zh">' + esc(d.zh) + '</div>' +
+            '<div class="dlg-py">' + esc(d.p) + '</div>' +
+            '<div class="dlg-ru">' + esc(d.ru) + '</div>' +
+          '</div>'
+        ).join('') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="sec">' +
+      '<div class="sec-head"><span class="sh-hz">语法</span><span class="sh-ru">Грамматика урока</span></div>' +
+      '<div class="gram-grid">' +
+        L.grammar.map(g =>
+          '<div class="gram-card">' +
+            '<div class="g-t"><span class="g-hz">' + esc(g.hz) + '</span><span>' + esc(g.t) + '</span></div>' +
+            '<div class="g-b">' + esc(g.b) + '</div>' +
+            '<div class="g-ex">' +
+              g.ex.map(e =>
+                '<div class="g-line">' +
+                  '<div class="g-zh">' + esc(e[0]) + '</div>' +
+                  '<div class="g-py">' + esc(e[1]) + '</div>' +
+                  '<div class="g-ru">' + esc(e[2]) + '</div>' +
+                '</div>'
+              ).join('') +
+            '</div>' +
+          '</div>'
+        ).join('') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="sec">' +
+      '<div class="sec-head"><span class="sh-hz">练习</span><span class="sh-ru">Тест-допуск к следующему уроку</span></div>' +
+      (allLearned
+        ? '<div class="quiz-gate ready" id="quizGate">' +
+            (passed
+              ? '<div>Тест уже пройден — можно двигаться дальше ✓</div>' +
+                '<button class="qg-btn" id="qgBtn">Пройти ещё раз</button>'
+              : '<div>Все слова выучены! Проверь себя: нужно ' + Math.ceil(L.quiz.length * 0.8) + ' правильных из ' + L.quiz.length + '.</div>' +
+                '<button class="qg-btn" id="qgBtn">Начать тест</button>') +
+          '</div>' +
+          '<div class="quiz-body" id="quizBody">' +
+            '<div class="q-progress" id="qProgress"></div>' +
+            '<div class="q-text" id="qText"></div>' +
+            '<div class="q-opts" id="qOpts"></div>' +
+            '<div class="q-result" id="qResult" style="display:none"></div>' +
+          '</div>'
+        : '<div class="quiz-gate">Тест откроется, когда отметишь все слова урока как выученные (' + learnedCount + ' / ' + L.words.length + '). Открывай карточки и нажимай «выучил».</div>') +
+    '</div>' +
+
+    '<div class="lv-next' + (passed ? ' show' : '') + '" id="lvNext">' +
+      (n < 5
+        ? '<button id="nextLessonBtn">Следующий урок: ' + LESSONS[n+1].hz + ' →</button>'
+        : '<button id="nextLessonBtn">Начать путь заново ↺</button>') +
+    '</div>';
+
+  document.getElementById('lvBack').addEventListener('click', backToPath);
+
+  renderWords(n, L);
+  if (allLearned) {
+    document.getElementById('qgBtn').addEventListener('click', () => startQuiz(n, L));
+  }
+  const nextBtn = document.getElementById('nextLessonBtn');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      if (n < 5) openLesson(n + 1);
+      else resetProgress();
+    });
+  }
+}
+
+function renderWords(n, L){
+  const grid = document.getElementById('wordsGrid');
+  const learnedSet = state.learned[n] || {};
+  const learnedCount = L.words.filter(x => learnedSet[x.h]).length;
+  grid.innerHTML = '';
+  L.words.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'word-card' + (learnedSet[w.h] ? ' learned' : '');
+    card.innerHTML =
+      '<div class="wc-inner">' +
+        '<div class="wc-face wc-front">' +
+          '<div class="hz">' + esc(w.h) + '</div>' +
+          '<div class="hint">нажми · 点击</div>' +
+        '</div>' +
+        '<div class="wc-face wc-back">' +
+          '<div class="py">' + esc(w.p) + '</div>' +
+          '<div class="ru">' + esc(w.t) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="wc-learn' + (learnedSet[w.h] ? '' : ' on-back') + '">' + (learnedSet[w.h] ? 'выучил ✓' : 'выучил') + '</button>';
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('wc-learn')) return;
+      card.classList.toggle('flipped');
+    });
+    card.querySelector('.wc-learn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const set = state.learned[n] || (state.learned[n] = {});
+      if (set[w.h]) delete set[w.h]; else set[w.h] = true;
+      saveState();
+      const count = L.words.filter(x => set[x.h]).length;
+      updateWordsProgress(n, L, count);
+      card.classList.toggle('learned', !!set[w.h]);
+      const btn = card.querySelector('.wc-learn');
+      btn.classList.toggle('on-back', !set[w.h]);
+      btn.textContent = set[w.h] ? 'выучил ✓' : 'выучил';
+      if (count === L.words.length) openLessonRefreshQuiz(n);
+    });
+    grid.appendChild(card);
+  });
+  updateWordsProgress(n, L, learnedCount);
+}
+
+function updateWordsProgress(n, L, count){
+  const fill = document.getElementById('wpFill');
+  const label = document.getElementById('wpLabel');
+  if (fill) fill.style.width = Math.round(count / L.words.length * 100) + '%';
+  if (label) label.textContent = count + ' / ' + L.words.length + ' выучено';
+}
+
+function openLessonRefreshQuiz(n){
+  const L = LESSONS[n];
+  const secs = document.querySelectorAll('#lessonView .sec');
+  const sec = secs[3];
+  if (!sec) return;
+  sec.innerHTML =
+    '<div class="sec-head"><span class="sh-hz">练习</span><span class="sh-ru">Тест-допуск к следующему уроку</span></div>' +
+    '<div class="quiz-gate ready">' +
+      '<div>Все слова выучены! Проверь себя: нужно ' + Math.ceil(L.quiz.length * 0.8) + ' правильных из ' + L.quiz.length + '.</div>' +
+      '<button class="qg-btn" id="qgBtn">Начать тест</button>' +
+    '</div>' +
+    '<div class="quiz-body" id="quizBody">' +
+      '<div class="q-progress" id="qProgress"></div>' +
+      '<div class="q-text" id="qText"></div>' +
+      '<div class="q-opts" id="qOpts"></div>' +
+      '<div class="q-result" id="qResult" style="display:none"></div>' +
+    '</div>';
+  document.getElementById('qgBtn').addEventListener('click', () => startQuiz(n, L));
+}
+
+let quizN = null, quizQs = [], quizIdx = 0, quizRight = 0, quizAnswered = false;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz(n, L){
+  quizN = n; quizIdx = 0; quizRight = 0; quizAnswered = false;
+  quizQs = shuffle(L.quiz);
+  document.getElementById('quizBody').classList.add('show');
+  document.getElementById('qResult').style.display = 'none';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  const q = quizQs[quizIdx];
+  quizAnswered = false;
+  document.getElementById('qProgress').textContent = 'Вопрос ' + (quizIdx + 1) + ' / ' + quizQs.length;
+  document.getElementById('qText').textContent = q.q;
+  const optsEl = document.getElementById('qOpts');
+  optsEl.innerHTML = '';
+  shuffle(q.opts).forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'q-opt';
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (quizAnswered) return;
+      quizAnswered = true;
+      const buttons = [...optsEl.children];
+      buttons.forEach(x => x.disabled = true);
+      if (opt === q.a) { b.classList.add('correct'); quizRight++; }
+      else {
+        b.classList.add('wrong');
+        buttons.find(x => x.textContent === q.a)?.classList.add('correct');
+      }
+      setTimeout(() => {
+        quizIdx++;
+        if (quizIdx < quizQs.length) renderQuizQuestion();
+        else finishQuiz();
+      }, 750);
+    });
+    optsEl.appendChild(b);
+  });
+}
+
+function finishQuiz(){
+  const L = LESSONS[quizN];
+  const need = Math.ceil(L.quiz.length * 0.8);
+  const ok = quizRight >= need;
+  const res = document.getElementById('qResult');
+  res.style.display = 'block';
+  res.innerHTML =
+    '<div class="qr-score">' + quizRight + ' / ' + L.quiz.length + '</div>' +
+    '<div class="qr-msg">' +
+      (ok
+        ? (quizN < 5 ? '测试通过！Урок сдан — следующий открыт!' : '恭喜！Ты прошёл все пять уроков!')
+        : '需要复习。 Нужно хотя бы ' + need + ' из ' + L.quiz.length + ' — повтори слова и попробуй снова.') +
+    '</div>' +
+    '<button class="qr-btn" id="qrRetry">' + (ok ? 'Пройти ещё раз' : 'Попробовать снова') + '</button>';
+  document.getElementById('qrRetry').addEventListener('click', () => startQuiz(quizN, L));
+
+  if (ok && !state.passed[quizN]) {
+    state.passed[quizN] = true;
+    saveState();
+    renderPath();
+    document.getElementById('lvNext').classList.add('show');
+  } else if (ok) {
+    document.getElementById('lvNext').classList.add('show');
+  }
+}
+
+function resetProgress(){
+  state = { learned:{}, passed:{}, opened:1 };
+  saveState();
+  backToPath();
+}
+
+FUTURE.forEach(L => {
   const card = document.createElement('article');
-  card.className = 'lesson fade-in';
+  card.className = 'lesson';
   card.innerHTML =
     '<div class="num">' + L.n + '</div>' +
     '<div class="hz">' + L.hz + '</div>' +
     '<div class="py">' + L.py + '</div>' +
     '<div class="ru">' + L.ru + '</div>' +
     '<div class="topic">' + L.topic + '</div>' +
-    '<div class="chips">' + L.words.map(w => '<span class="chip">' + w + '</span>').join('') + '</div>' +
     '<div class="pages">' + L.pages + '</div>';
-  wrap.appendChild(card);
-}
+  futureLessons.appendChild(card);
+});
 
 document.querySelectorAll('.fade-in').forEach((el, i) => {
   setTimeout(() => el.classList.add('visible'), 110 * i + 100);
 });
-</script>
 
-<audio id="bgMusic" loop preload="none">
-  <source src="ambient.wav" type="audio/wav">
-</audio>
+renderPath();
+</script>
+<audio id="bgMusic" loop preload="none"><source src="ambient.wav" type="audio/wav"></audio>
 <button class="music-btn" id="musicBtn" title="Фоновая музыка" aria-label="Включить или выключить музыку">
-  <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-    <path d="M9 18V5l12-2v13"/>
-    <circle cx="6" cy="18" r="3"/>
-    <circle cx="18" cy="16" r="3"/>
-  </svg>
-  <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-    <path d="M11 5 6 9H2v6h4l5 4V5z"/>
-    <path d="M22 9l-6 6M16 9l6 6"/>
-  </svg>
+  <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
 </button>
 <script>
 (function(){
@@ -290,9 +754,7 @@ document.querySelectorAll('.fade-in').forEach((el, i) => {
   });
 })();
 </script>
-
 <script>
-// Возврат на главную без перезагрузки (оболочка)
 if (window.parent !== window) {
   const dupBtn = document.getElementById('musicBtn');
   if (dupBtn) dupBtn.style.display = 'none';
@@ -306,3 +768,4 @@ if (window.parent !== window) {
 </script>
 </body>
 </html>
+
