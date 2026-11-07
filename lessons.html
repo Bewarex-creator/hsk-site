@@ -69,8 +69,7 @@
   .wc-learn { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); background:none; border:none; color:#8d8172; font-family:inherit; font-size:.72rem; letter-spacing:.1em; cursor:pointer; z-index:2; }
   .wc-learn:hover { color:#c4943a; }
   .word-card.learned .wc-learn { color:#c4943a; }
-  .wc-learn { backface-visibility:hidden; }
-  .wc-learn.on-back { transform:translateX(-50%) rotateY(180deg); }
+  .wc-learn { text-shadow:0 1px 2px rgba(0,0,0,.6); }
   .words-progress { margin-top:14px; display:flex; align-items:center; gap:12px; }
   .wp-bar { flex:1; height:6px; background:rgba(196,148,58,.12); border-radius:3px; overflow:hidden; }
   .wp-fill { height:100%; width:0; background:linear-gradient(90deg, #8d1019, #c4943a); transition:width .5s ease; }
@@ -860,7 +859,7 @@ function renderWords(n, L){
           '<div class="ru">' + esc(w.t) + '</div>' +
         '</div>' +
       '</div>' +
-      '<button class="wc-learn' + (learnedSet[w.h] ? '' : ' on-back') + '">' + (learnedSet[w.h] ? 'выучил ✓' : 'выучил') + '</button>';
+      '<button class="wc-learn" type="button">' + (learnedSet[w.h] ? 'выучил ✓' : 'выучил') + '</button>';
     card.addEventListener('click', (e) => {
       if (e.target.classList.contains('wc-learn')) return;
       card.classList.toggle('flipped');
@@ -874,7 +873,6 @@ function renderWords(n, L){
       updateWordsProgress(n, L, count);
       card.classList.toggle('learned', !!set[w.h]);
       const btn = card.querySelector('.wc-learn');
-      btn.classList.toggle('on-back', !set[w.h]);
       btn.textContent = set[w.h] ? 'выучил ✓' : 'выучил';
       if (count === L.words.length) openLessonRefreshQuiz(n);
     });
