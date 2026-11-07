@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Уроки — 汉语学习</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { min-height:100%; }
+
+  body {
+    background:#0d0b0a;
+    font-family:'Cormorant Garamond','Noto Serif SC',serif;
+    color:#e9e2d5;
+    display:flex; flex-direction:column; align-items:center;
+    padding:30px 16px 40px;
+    gap:16px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  .layer { position:absolute; inset:0; pointer-events:none; }
+
+  /* Тёплая тушь: красное солнце и золото */
+  .mist {
+    background:
+      radial-gradient(ellipse 55% 45% at 50% 0%, rgba(146,26,33,.14) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 12% 100%, rgba(196,148,58,.08) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 88% 100%, rgba(60,26,24,.18) 0%, transparent 70%);
+  }
+
+  .grain {
+    z-index:4; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .header, .lesson, .back-home { position:relative; z-index:3; }
+
+  /* ===== Шапка ===== */
+  .header { text-align:center; max-width:640px; }
+  .header-seal {
+    width:44px; height:44px; margin:0 auto 14px;
+    background:linear-gradient(150deg, #b01823, #8d1019);
+    border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif SC',serif; font-weight:900;
+    font-size:1.3rem; color:#f5ead6;
+    box-shadow:0 6px 24px rgba(176,24,35,.45), inset 0 0 0 2px rgba(245,234,214,.28), inset 0 0 0 5px rgba(176,24,35,.9);
+    transform:rotate(-4deg);
+  }
+  .header h1 {
+    font-family:'Noto Serif SC',serif; font-weight:900;
+    font-size:clamp(2rem, 5vw, 3rem);
+    letter-spacing:.12em; color:#f3ead8;
+  }
+  .header .sub {
+    margin-top:8px; font-style:italic; color:#a89a83;
+    font-size:1.05rem; letter-spacing:.1em;
+  }
+  .header .divider {
+    display:flex; align-items:center; gap:14px;
+    margin:20px auto 0; width:min(300px, 70vw);
+  }
+  .header .divider::before, .header .divider::after {
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(196,148,58,.55));
+  }
+  .header .divider::after { background:linear-gradient(90deg, rgba(196,148,58,.55), transparent); }
+  .header .divider .gem {
+    width:7px; height:7px; background:#c4943a;
+    transform:rotate(45deg);
+    box-shadow:0 0 12px rgba(196,148,58,.8);
+  }
+
+  /* ===== Сетка уроков ===== */
+  .lessons {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:18px;
+    width:min(1060px, 96vw);
+    position:relative; z-index:3;
+  }
+
+  .lesson {
+    border:1px solid rgba(196,148,58,.3);
+    background:linear-gradient(150deg, rgba(38,30,26,.6), rgba(24,19,16,.72));
+    backdrop-filter:blur(6px);
+    padding:18px 20px 16px;
+    position:relative;
+    transition:transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, box-shadow .35s ease;
+  }
+  .lesson::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(245,234,214,.07) 48%, transparent 62%);
+    transform:translateX(-120%);
+    transition:transform .8s ease;
+    pointer-events:none;
+  }
+  .lesson:hover::before { transform:translateX(120%); }
+  .lesson:hover {
+    transform:translateY(-4px);
+    border-color:rgba(196,148,58,.6);
+    box-shadow:0 18px 44px rgba(0,0,0,.5), 0 0 0 1px rgba(196,148,58,.1), 0 0 36px rgba(176,24,35,.1);
+  }
+
+  .lesson .num {
+    position:absolute; top:14px; right:16px;
+    font-family:'Noto Serif SC',serif; font-weight:900;
+    font-size:.95rem; color:#8d1019;
+    background:rgba(176,24,35,.16);
+    border:1px solid rgba(196,148,58,.35);
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    letter-spacing:0;
+  }
+  .lesson .hz {
+    font-family:'Noto Serif SC',serif; font-weight:600;
+    font-size:1.5rem; color:#c94a52; letter-spacing:.06em;
+  }
+  .lesson .py {
+    font-style:italic; color:#c4943a; font-size:.95rem;
+    letter-spacing:.05em; margin-top:2px;
+  }
+  .lesson .ru {
+    font-size:1.05rem; color:#e9e2d5; margin-top:6px; letter-spacing:.03em;
+  }
+  .lesson .topic {
+    margin-top:8px; font-size:.92rem; color:#a89a83; line-height:1.55;
+  }
+  .lesson .chips {
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
+  }
+  .lesson .chip {
+    font-family:'Noto Serif SC',serif; font-size:.95rem;
+    color:#e0d5bf; border:1px solid rgba(196,148,58,.25);
+    padding:3px 10px; border-radius:999px;
+    background:rgba(196,148,58,.06);
+  }
+  .lesson .pages {
+    margin-top:12px; font-size:.8rem; color:#6e6355;
+    letter-spacing:.08em; font-style:italic;
+  }
+
+  .soon {
+    margin-top:6px; width:min(1060px, 96vw);
+    text-align:center; font-style:italic; color:#8d8172;
+    font-size:.98rem; letter-spacing:.06em;
+    position:relative; z-index:3;
+  }
+  .soon .hz { font-family:'Noto Serif SC',serif; color:#9d8f79; }
+
+  .back-home {
+    margin-top:18px;
+    color:#a89a83; text-decoration:none; font-size:1.05rem;
+    letter-spacing:.1em; border:1px solid transparent;
+    padding:6px 10px; transition:all .3s ease;
+  }
+  .back-home:hover { color:#f5ead6; border-color:rgba(196,148,58,.5); }
+  .back-home .arrow { color:#c4943a; transition:transform .25s ease; display:inline-block; }
+  .back-home:hover .arrow { transform:translateX(-4px); }
+
+  /* ===== Появление ===== */
+  .fade-in {
+    opacity:0; transform:translateY(18px); filter:blur(6px);
+    transition:opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1), filter .9s ease;
+  }
+  .fade-in.visible { opacity:1; transform:translateY(0); filter:blur(0); }
+
+  @media (max-width:560px) {
+    .lessons { grid-template-columns:1fr; }
+  }
+
+  /* ===== Музыкальная кнопка ===== */
+  .music-btn {
+    position:fixed; bottom:18px; left:18px;
+    width:38px; height:38px;
+    background:rgba(24,19,16,.6);
+    border:1px solid rgba(196,148,58,.35);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:100;
+    backdrop-filter:blur(8px);
+    transition:all .3s ease;
+  }
+  .music-btn:hover {
+    border-color:rgba(196,148,58,.7);
+    background:rgba(38,30,26,.75);
+  }
+  .music-btn svg { width:18px; height:18px; color:#c4943a; }
+  .music-btn .wave { animation:wavePulse 1.6s ease-in-out infinite; transform-origin:center; }
+  .music-btn.paused .wave { animation:none; opacity:.35; }
+  @keyframes wavePulse {
+    0%,100% { opacity:.7; transform:scaleY(.7); }
+    50%     { opacity:1;  transform:scaleY(1); }
+  }
+  .music-btn.playing .icon-off { display:none; }
+  .music-btn:not(.playing) .icon-on { display:none; }
+</style>
+</head>
+<body>
+
+  <div class="layer mist"></div>
+  <div class="layer grain"></div>
+
+  <div class="header fade-in">
+    <div class="header-seal">学</div>
+    <h1>课程 · Уроки</h1>
+    <div class="sub">Standard Course HSK 1 — пятнадцать шагов</div>
+    <div class="divider"><span class="gem"></span></div>
+  </div>
+
+  <div class="lessons" id="lessons"></div>
+
+  <div class="soon fade-in">
+    Содержание каждого урока будет добавлено из учебника — <span class="hz">敬请期待</span>
+  </div>
+
+  <a class="back-home fade-in" href="index.html">
+    <span class="arrow">←</span> На главную
+  </a>
+
+<script>
+// ===== Уроки Standard Course HSK 1 =====
+const LESSONS = [
+  { n:1,  hz:'你好',           py:'Nǐ hǎo',                    ru:'Здравствуй',                       topic:'Первые приветствия и прощания.',                        words:['你好','再见'],            pages:'стр. 22–27' },
+  { n:2,  hz:'谢谢你',         py:'Xièxie nǐ',                 ru:'Спасибо тебе',                     topic:'Вежливые слова: благодарность и ответ.',                words:['谢谢','不客气'],          pages:'стр. 28–33' },
+  { n:3,  hz:'你叫什么名字',   py:'Nǐ jiào shénme míngzi',     ru:'Как тебя зовут',                   topic:'Знакомство: имя и местоимения.',                        words:['名字','叫'],              pages:'стр. 34–41' },
+  { n:4,  hz:'她是我的汉语老师', py:'Tā shì wǒ de hànyǔ lǎoshī', ru:'Она моя учительница китайского',   topic:'Представление людей и профессий.',                      words:['老师','汉语'],            pages:'стр. 42–49' },
+  { n:5,  hz:'她女儿今年二十岁', py:'Tā nǚ\'ér jīnnián èrshí suì', ru:'Её дочери в этом году двадцать', topic:'Возраст и члены семьи.',                                words:['女儿','岁'],              pages:'стр. 50–59' },
+  { n:6,  hz:'我会说汉语',     py:'Wǒ huì shuō hànyǔ',         ru:'Я умею говорить по-китайски',      topic:'Умения и языки.',                                       words:['会','说'],                pages:'стр. 60–67' },
+  { n:7,  hz:'今天几号',       py:'Jīntiān jǐ hào',            ru:'Какое сегодня число',              topic:'Дни недели и даты.',                                    words:['今天','星期'],            pages:'стр. 68–75' },
+  { n:8,  hz:'我想喝茶',       py:'Wǒ xiǎng hē chá',           ru:'Я хочу выпить чаю',                topic:'Желания и напитки.',                                    words:['想','喝茶'],              pages:'стр. 76–83' },
+  { n:9,  hz:'你儿子在哪儿工作', py:'Nǐ érzi zài nǎr gōngzuò',   ru:'Где работает твой сын',            topic:'Место работы и профессии.',                             words:['儿子','工作'],            pages:'стр. 84–91' },
+  { n:10, hz:'我能坐这儿吗',   py:'Wǒ néng zuò zhèr ma',       ru:'Можно мне сесть здесь',            topic:'Просьбы и разрешения.',                                 words:['能','坐'],                pages:'стр. 92–101' },
+  { n:11, hz:'现在几点',       py:'Xiànzài jǐ diǎn',           ru:'Который час сейчас',               topic:'Время на часах.',                                       words:['现在','点'],              pages:'стр. 102–109' },
+  { n:12, hz:'明天天气怎么样', py:'Míngtiān tiānqì zěnmeyàng', ru:'Какая завтра будет погода',        topic:'Погода и планы.',                                       words:['明天','天气'],            pages:'стр. 110–117' },
+  { n:13, hz:'他在学做中国菜呢', py:'Tā zài xué zuò Zhōngguó cài ne', ru:'Он учится готовить китайские блюда', topic:'Действие в процессе.',                         words:['学','做菜'],              pages:'стр. 118–123' },
+  { n:14, hz:'她买了不少衣服', py:'Tā mǎile bùshǎo yīfu',      ru:'Она купила немало одежды',         topic:'Покупки и одежда.',                                     words:['买','衣服'],              pages:'стр. 124–131' },
+  { n:15, hz:'我是坐飞机来的', py:'Wǒ shì zuò fēijī lái de',   ru:'Я прилетел на самолёте',           topic:'Транспорт и рассказ о себе.',                           words:['坐飞机','来'],            pages:'стр. 132–139' }
+];
+
+const wrap = document.getElementById('lessons');
+for (const L of LESSONS) {
+  const card = document.createElement('article');
+  card.className = 'lesson fade-in';
+  card.innerHTML =
+    '<div class="num">' + L.n + '</div>' +
+    '<div class="hz">' + L.hz + '</div>' +
+    '<div class="py">' + L.py + '</div>' +
+    '<div class="ru">' + L.ru + '</div>' +
+    '<div class="topic">' + L.topic + '</div>' +
+    '<div class="chips">' + L.words.map(w => '<span class="chip">' + w + '</span>').join('') + '</div>' +
+    '<div class="pages">' + L.pages + '</div>';
+  wrap.appendChild(card);
+}
+
+document.querySelectorAll('.fade-in').forEach((el, i) => {
+  setTimeout(() => el.classList.add('visible'), 110 * i + 100);
+});
+</script>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="ambient.wav" type="audio/wav">
+</audio>
+<button class="music-btn" id="musicBtn" title="Фоновая музыка" aria-label="Включить или выключить музыку">
+  <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M9 18V5l12-2v13"/>
+    <circle cx="6" cy="18" r="3"/>
+    <circle cx="18" cy="16" r="3"/>
+  </svg>
+  <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M11 5 6 9H2v6h4l5 4V5z"/>
+    <path d="M22 9l-6 6M16 9l6 6"/>
+  </svg>
+</button>
+<script>
+(function(){
+  const btn = document.getElementById('musicBtn');
+  const audio = document.getElementById('bgMusic');
+  audio.volume = 0.35;
+  let playing = false;
+  btn.addEventListener('click', () => {
+    if (playing) { audio.pause(); btn.classList.remove('playing'); }
+    else { audio.play(); btn.classList.add('playing'); }
+    playing = !playing;
+  });
+})();
+</script>
+
+<script>
+// Возврат на главную без перезагрузки (оболочка)
+if (window.parent !== window) {
+  const dupBtn = document.getElementById('musicBtn');
+  if (dupBtn) dupBtn.style.display = 'none';
+  const dupAudio = document.getElementById('bgMusic');
+  if (dupAudio) dupAudio.remove();
+  document.querySelector('.back-home')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.parent.postMessage('close-app', '*');
+  });
+}
+</script>
+</body>
+</html>
