@@ -181,6 +181,8 @@
     cursor:pointer;
   }
   .card.flipped { transform:rotateY(180deg); }
+  .card.flip-mode { transform:rotateY(180deg); }
+  .card.flip-mode.flipped { transform:rotateY(0deg); }
 
   .face {
     position:absolute; inset:0;
@@ -610,6 +612,7 @@
     <div class="controls">
       <button class="btn secondary" id="prevBtn">← Предыдущая</button>
       <button class="btn secondary" id="nextBtn">Следующая →</button>
+      <button class="btn" id="flipBtn">🔄 Переворот</button>
       <button class="btn shuffle" id="shuffleBtn">🔀 Перемешать</button>
     </div>
     <a class="back-home" href="index.html">
@@ -779,6 +782,117 @@ const cards = [
   { hanzi: '昨天', pinyin: 'zuótiān', translation: 'вчера', category: 'Время' },
   { hanzi: '坐', pinyin: 'zuò', translation: 'сидеть; ехать на', category: 'Действия' },
   { hanzi: '做', pinyin: 'zuò', translation: 'делать', category: 'Действия' },
+];
+
+const LESSON_OF = {};
+(LESSON_OF["你好"] = LESSON_OF["你好"] || []).push(1);
+(LESSON_OF["你"] = LESSON_OF["你"] || []).push(1);
+(LESSON_OF["您"] = LESSON_OF["您"] || []).push(1);
+(LESSON_OF["好"] = LESSON_OF["好"] || []).push(1);
+(LESSON_OF["你们"] = LESSON_OF["你们"] || []).push(1);
+(LESSON_OF["再见"] = LESSON_OF["再见"] || []).push(1);
+(LESSON_OF["谢谢"] = LESSON_OF["谢谢"] || []).push(2);
+(LESSON_OF["不客气"] = LESSON_OF["不客气"] || []).push(2);
+(LESSON_OF["对不起"] = LESSON_OF["对不起"] || []).push(2);
+(LESSON_OF["没关系"] = LESSON_OF["没关系"] || []).push(2);
+(LESSON_OF["不"] = LESSON_OF["不"] || []).push(2);
+(LESSON_OF["叫"] = LESSON_OF["叫"] || []).push(3);
+(LESSON_OF["什么"] = LESSON_OF["什么"] || []).push(3);
+(LESSON_OF["名字"] = LESSON_OF["名字"] || []).push(3);
+(LESSON_OF["同学"] = LESSON_OF["同学"] || []).push(3);
+(LESSON_OF["老师"] = LESSON_OF["老师"] || []).push(3);
+(LESSON_OF["学生"] = LESSON_OF["学生"] || []).push(3);
+(LESSON_OF["认识"] = LESSON_OF["认识"] || []).push(3);
+(LESSON_OF["高兴"] = LESSON_OF["高兴"] || []).push(3);
+(LESSON_OF["我"] = LESSON_OF["我"] || []).push(3);
+(LESSON_OF["她"] = LESSON_OF["她"] || []).push(4);
+(LESSON_OF["他"] = LESSON_OF["他"] || []).push(4);
+(LESSON_OF["是"] = LESSON_OF["是"] || []).push(4);
+(LESSON_OF["的"] = LESSON_OF["的"] || []).push(4);
+(LESSON_OF["吗"] = LESSON_OF["吗"] || []).push(4);
+(LESSON_OF["不"] = LESSON_OF["不"] || []).push(4);
+(LESSON_OF["汉语"] = LESSON_OF["汉语"] || []).push(4);
+(LESSON_OF["呢"] = LESSON_OF["呢"] || []).push(4);
+(LESSON_OF["谁"] = LESSON_OF["谁"] || []).push(4);
+(LESSON_OF["家"] = LESSON_OF["家"] || []).push(5);
+(LESSON_OF["有"] = LESSON_OF["有"] || []).push(5);
+(LESSON_OF["几"] = LESSON_OF["几"] || []).push(5);
+(LESSON_OF["口"] = LESSON_OF["口"] || []).push(5);
+(LESSON_OF["爸爸"] = LESSON_OF["爸爸"] || []).push(5);
+(LESSON_OF["妈妈"] = LESSON_OF["妈妈"] || []).push(5);
+(LESSON_OF["哥哥"] = LESSON_OF["哥哥"] || []).push(5);
+(LESSON_OF["姐姐"] = LESSON_OF["姐姐"] || []).push(5);
+(LESSON_OF["弟弟"] = LESSON_OF["弟弟"] || []).push(5);
+(LESSON_OF["妹妹"] = LESSON_OF["妹妹"] || []).push(5);
+(LESSON_OF["女儿"] = LESSON_OF["女儿"] || []).push(5);
+(LESSON_OF["儿子"] = LESSON_OF["儿子"] || []).push(5);
+(LESSON_OF["两"] = LESSON_OF["两"] || []).push(5);
+(LESSON_OF["和"] = LESSON_OF["和"] || []).push(5);
+(LESSON_OF["岁"] = LESSON_OF["岁"] || []).push(5);
+(LESSON_OF["今年"] = LESSON_OF["今年"] || []).push(5);
+(LESSON_OF["狗"] = LESSON_OF["狗"] || []).push(5);
+(LESSON_OF["会"] = LESSON_OF["会"] || []).push(6);
+(LESSON_OF["说"] = LESSON_OF["说"] || []).push(6);
+(LESSON_OF["一点儿"] = LESSON_OF["一点儿"] || []).push(6);
+(LESSON_OF["觉得"] = LESSON_OF["觉得"] || []).push(6);
+(LESSON_OF["难"] = LESSON_OF["难"] || []).push(6);
+(LESSON_OF["太…了"] = LESSON_OF["太…了"] || []).push(6);
+(LESSON_OF["可是"] = LESSON_OF["可是"] || []).push(6);
+(LESSON_OF["汉字"] = LESSON_OF["汉字"] || []).push(6);
+(LESSON_OF["写"] = LESSON_OF["写"] || []).push(6);
+(LESSON_OF["有意思"] = LESSON_OF["有意思"] || []).push(6);
+(LESSON_OF["今天"] = LESSON_OF["今天"] || []).push(7);
+(LESSON_OF["几"] = LESSON_OF["几"] || []).push(7);
+(LESSON_OF["号"] = LESSON_OF["号"] || []).push(7);
+(LESSON_OF["星期"] = LESSON_OF["星期"] || []).push(7);
+(LESSON_OF["生日"] = LESSON_OF["生日"] || []).push(7);
+(LESSON_OF["打算"] = LESSON_OF["打算"] || []).push(7);
+(LESSON_OF["时间"] = LESSON_OF["时间"] || []).push(7);
+(LESSON_OF["月"] = LESSON_OF["月"] || []).push(7);
+(LESSON_OF["年"] = LESSON_OF["年"] || []).push(7);
+(LESSON_OF["星期六"] = LESSON_OF["星期六"] || []).push(7);
+(LESSON_OF["想"] = LESSON_OF["想"] || []).push(8);
+(LESSON_OF["喝"] = LESSON_OF["喝"] || []).push(8);
+(LESSON_OF["茶"] = LESSON_OF["茶"] || []).push(8);
+(LESSON_OF["要"] = LESSON_OF["要"] || []).push(8);
+(LESSON_OF["咖啡"] = LESSON_OF["咖啡"] || []).push(8);
+(LESSON_OF["牛奶"] = LESSON_OF["牛奶"] || []).push(8);
+(LESSON_OF["水"] = LESSON_OF["水"] || []).push(8);
+(LESSON_OF["杯"] = LESSON_OF["杯"] || []).push(8);
+(LESSON_OF["苹果"] = LESSON_OF["苹果"] || []).push(8);
+(LESSON_OF["鸡蛋"] = LESSON_OF["鸡蛋"] || []).push(8);
+(LESSON_OF["儿子"] = LESSON_OF["儿子"] || []).push(9);
+(LESSON_OF["哪儿"] = LESSON_OF["哪儿"] || []).push(9);
+(LESSON_OF["工作"] = LESSON_OF["工作"] || []).push(9);
+(LESSON_OF["在"] = LESSON_OF["在"] || []).push(9);
+(LESSON_OF["做"] = LESSON_OF["做"] || []).push(9);
+(LESSON_OF["公司"] = LESSON_OF["公司"] || []).push(9);
+(LESSON_OF["医院"] = LESSON_OF["医院"] || []).push(9);
+(LESSON_OF["学校"] = LESSON_OF["学校"] || []).push(9);
+(LESSON_OF["医生"] = LESSON_OF["医生"] || []).push(9);
+(LESSON_OF["爸爸"] = LESSON_OF["爸爸"] || []).push(9);
+(LESSON_OF["能"] = LESSON_OF["能"] || []).push(10);
+(LESSON_OF["坐"] = LESSON_OF["坐"] || []).push(10);
+(LESSON_OF["这儿"] = LESSON_OF["这儿"] || []).push(10);
+(LESSON_OF["那儿"] = LESSON_OF["那儿"] || []).push(10);
+(LESSON_OF["可以"] = LESSON_OF["可以"] || []).push(10);
+(LESSON_OF["请"] = LESSON_OF["请"] || []).push(10);
+(LESSON_OF["书"] = LESSON_OF["书"] || []).push(10);
+(LESSON_OF["知道"] = LESSON_OF["知道"] || []).push(10);
+(LESSON_OF["书包"] = LESSON_OF["书包"] || []).push(10);
+(LESSON_OF["问"] = LESSON_OF["问"] || []).push(10);
+(LESSON_OF["现在"] = LESSON_OF["现在"] || []).push(11);
+(LESSON_OF["几点"] = LESSON_OF["几点"] || []).push(11);
+(LESSON_OF["点"] = LESSON_OF["点"] || []).push(11);
+(LESSON_OF["分"] = LESSON_OF["分"] || []).push(11);
+(LESSON_OF["半"] = LESSON_OF["半"] || []).push(11);
+(LESSON_OF["早上"] = LESSON_OF["早上"] || []).push(11);
+(LESSON_OF["中午"] = LESSON_OF["中午"] || []).push(11);
+(LESSON_OF["晚上"] = LESSON_OF["晚上"] || []).push(11);
+(LESSON_OF["睡觉"] = LESSON_OF["睡觉"] || []).push(11);
+(LESSON_OF["吃饭"] = LESSON_OF["吃饭"] || []).push(11);
+
+const LESSON_CARDS = [
   { hanzi: '你好', pinyin: 'nǐ hǎo', translation: 'здравствуй', category: 'Урок 1' },
   { hanzi: '您', pinyin: 'nín', translation: 'Вы (вежливо)', category: 'Урок 1' },
   { hanzi: '你们', pinyin: 'nǐmen', translation: 'вы (мн. ч.)', category: 'Урок 1' },
@@ -819,6 +933,115 @@ const cards = [
   { hanzi: '晚上', pinyin: 'wǎnshang', translation: 'вечер', category: 'Урок 11' },
   { hanzi: '吃饭', pinyin: 'chī fàn', translation: 'есть; кушать', category: 'Урок 11' },
 ];
+cards.push(...LESSON_CARDS);
+cards.forEach(c => { c.lessons = LESSON_OF[c.hanzi] || []; });
+const LESSON_ORD = {};
+(LESSON_ORD["你好"] = 1 * 100 + 0);
+(LESSON_ORD["你"] = 1 * 100 + 1);
+(LESSON_ORD["您"] = 1 * 100 + 2);
+(LESSON_ORD["好"] = 1 * 100 + 3);
+(LESSON_ORD["你们"] = 1 * 100 + 4);
+(LESSON_ORD["再见"] = 1 * 100 + 5);
+(LESSON_ORD["谢谢"] = 2 * 100 + 0);
+(LESSON_ORD["不客气"] = 2 * 100 + 1);
+(LESSON_ORD["对不起"] = 2 * 100 + 2);
+(LESSON_ORD["没关系"] = 2 * 100 + 3);
+(LESSON_ORD["不"] = 2 * 100 + 4);
+(LESSON_ORD["叫"] = 3 * 100 + 0);
+(LESSON_ORD["什么"] = 3 * 100 + 1);
+(LESSON_ORD["名字"] = 3 * 100 + 2);
+(LESSON_ORD["同学"] = 3 * 100 + 3);
+(LESSON_ORD["老师"] = 3 * 100 + 4);
+(LESSON_ORD["学生"] = 3 * 100 + 5);
+(LESSON_ORD["认识"] = 3 * 100 + 6);
+(LESSON_ORD["高兴"] = 3 * 100 + 7);
+(LESSON_ORD["我"] = 3 * 100 + 8);
+(LESSON_ORD["她"] = 4 * 100 + 0);
+(LESSON_ORD["他"] = 4 * 100 + 1);
+(LESSON_ORD["是"] = 4 * 100 + 2);
+(LESSON_ORD["的"] = 4 * 100 + 3);
+(LESSON_ORD["吗"] = 4 * 100 + 4);
+(LESSON_ORD["不"] = 4 * 100 + 5);
+(LESSON_ORD["汉语"] = 4 * 100 + 6);
+(LESSON_ORD["呢"] = 4 * 100 + 7);
+(LESSON_ORD["谁"] = 4 * 100 + 8);
+(LESSON_ORD["家"] = 5 * 100 + 0);
+(LESSON_ORD["有"] = 5 * 100 + 1);
+(LESSON_ORD["几"] = 5 * 100 + 2);
+(LESSON_ORD["口"] = 5 * 100 + 3);
+(LESSON_ORD["爸爸"] = 5 * 100 + 4);
+(LESSON_ORD["妈妈"] = 5 * 100 + 5);
+(LESSON_ORD["哥哥"] = 5 * 100 + 6);
+(LESSON_ORD["姐姐"] = 5 * 100 + 7);
+(LESSON_ORD["弟弟"] = 5 * 100 + 8);
+(LESSON_ORD["妹妹"] = 5 * 100 + 9);
+(LESSON_ORD["女儿"] = 5 * 100 + 10);
+(LESSON_ORD["儿子"] = 5 * 100 + 11);
+(LESSON_ORD["两"] = 5 * 100 + 12);
+(LESSON_ORD["和"] = 5 * 100 + 13);
+(LESSON_ORD["岁"] = 5 * 100 + 14);
+(LESSON_ORD["今年"] = 5 * 100 + 15);
+(LESSON_ORD["狗"] = 5 * 100 + 16);
+(LESSON_ORD["会"] = 6 * 100 + 0);
+(LESSON_ORD["说"] = 6 * 100 + 1);
+(LESSON_ORD["一点儿"] = 6 * 100 + 2);
+(LESSON_ORD["觉得"] = 6 * 100 + 3);
+(LESSON_ORD["难"] = 6 * 100 + 4);
+(LESSON_ORD["太…了"] = 6 * 100 + 5);
+(LESSON_ORD["可是"] = 6 * 100 + 6);
+(LESSON_ORD["汉字"] = 6 * 100 + 7);
+(LESSON_ORD["写"] = 6 * 100 + 8);
+(LESSON_ORD["有意思"] = 6 * 100 + 9);
+(LESSON_ORD["今天"] = 7 * 100 + 0);
+(LESSON_ORD["几"] = 7 * 100 + 1);
+(LESSON_ORD["号"] = 7 * 100 + 2);
+(LESSON_ORD["星期"] = 7 * 100 + 3);
+(LESSON_ORD["生日"] = 7 * 100 + 4);
+(LESSON_ORD["打算"] = 7 * 100 + 5);
+(LESSON_ORD["时间"] = 7 * 100 + 6);
+(LESSON_ORD["月"] = 7 * 100 + 7);
+(LESSON_ORD["年"] = 7 * 100 + 8);
+(LESSON_ORD["星期六"] = 7 * 100 + 9);
+(LESSON_ORD["想"] = 8 * 100 + 0);
+(LESSON_ORD["喝"] = 8 * 100 + 1);
+(LESSON_ORD["茶"] = 8 * 100 + 2);
+(LESSON_ORD["要"] = 8 * 100 + 3);
+(LESSON_ORD["咖啡"] = 8 * 100 + 4);
+(LESSON_ORD["牛奶"] = 8 * 100 + 5);
+(LESSON_ORD["水"] = 8 * 100 + 6);
+(LESSON_ORD["杯"] = 8 * 100 + 7);
+(LESSON_ORD["苹果"] = 8 * 100 + 8);
+(LESSON_ORD["鸡蛋"] = 8 * 100 + 9);
+(LESSON_ORD["儿子"] = 9 * 100 + 0);
+(LESSON_ORD["哪儿"] = 9 * 100 + 1);
+(LESSON_ORD["工作"] = 9 * 100 + 2);
+(LESSON_ORD["在"] = 9 * 100 + 3);
+(LESSON_ORD["做"] = 9 * 100 + 4);
+(LESSON_ORD["公司"] = 9 * 100 + 5);
+(LESSON_ORD["医院"] = 9 * 100 + 6);
+(LESSON_ORD["学校"] = 9 * 100 + 7);
+(LESSON_ORD["医生"] = 9 * 100 + 8);
+(LESSON_ORD["爸爸"] = 9 * 100 + 9);
+(LESSON_ORD["能"] = 10 * 100 + 0);
+(LESSON_ORD["坐"] = 10 * 100 + 1);
+(LESSON_ORD["这儿"] = 10 * 100 + 2);
+(LESSON_ORD["那儿"] = 10 * 100 + 3);
+(LESSON_ORD["可以"] = 10 * 100 + 4);
+(LESSON_ORD["请"] = 10 * 100 + 5);
+(LESSON_ORD["书"] = 10 * 100 + 6);
+(LESSON_ORD["知道"] = 10 * 100 + 7);
+(LESSON_ORD["书包"] = 10 * 100 + 8);
+(LESSON_ORD["问"] = 10 * 100 + 9);
+(LESSON_ORD["现在"] = 11 * 100 + 0);
+(LESSON_ORD["几点"] = 11 * 100 + 1);
+(LESSON_ORD["点"] = 11 * 100 + 2);
+(LESSON_ORD["分"] = 11 * 100 + 3);
+(LESSON_ORD["半"] = 11 * 100 + 4);
+(LESSON_ORD["早上"] = 11 * 100 + 5);
+(LESSON_ORD["中午"] = 11 * 100 + 6);
+(LESSON_ORD["晚上"] = 11 * 100 + 7);
+(LESSON_ORD["睡觉"] = 11 * 100 + 8);
+(LESSON_ORD["吃饭"] = 11 * 100 + 9);
 
 const cardEl = document.getElementById('card');
 const hanziEl = document.getElementById('hanzi');
@@ -839,8 +1062,9 @@ function showCard(i) {
   hanziEl.textContent = c.hanzi;
   pinyinEl.textContent = c.pinyin;
   translationEl.textContent = c.translation;
-  badgeFront.textContent = c.category;
-  badgeBack.textContent = c.category;
+  const lessonCat = (c.lessons && c.lessons.length) ? 'Урок ' + c.lessons[0] : c.category;
+  badgeFront.textContent = lessonCat;
+  badgeBack.textContent = lessonCat;
   const firstGlyph = c.hanzi[0];
   const wmF = document.getElementById('wmFront');
   const wmB = document.getElementById('wmBack');
@@ -860,7 +1084,8 @@ let filtersRevealed = false;
 function buildFilters() {
   filtersEl.innerHTML = '';
   for (const cat of CATS) {
-    const count = cat === 'Все' ? cards.length : cards.filter(c => c.category === cat).length;
+    const lessonNum0 = cat.startsWith('Урок ') ? Number(cat.split(' ')[1]) : null;
+    const count = cat === 'Все' ? cards.length : cards.filter(c => lessonNum0 ? (c.lessons || []).includes(lessonNum0) : c.category === cat).length;
     if (cat !== 'Все' && count === 0) continue;
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (cat === activeCategory ? ' active' : '') + (filtersRevealed ? ' shown' : '');
@@ -873,7 +1098,9 @@ function buildFilters() {
 function setCategory(cat) {
   activeCategory = cat;
   buildFilters();
-  filtered = cards.map((c, i) => ({c, i})).filter(x => cat === 'Все' || x.c.category === cat).map(x => x.i);
+  const lessonNum = cat.startsWith('Урок ') ? Number(cat.split(' ')[1]) : null;
+  filtered = cards.map((c, i) => ({c, i})).filter(x => cat === 'Все' || (lessonNum ? (x.c.lessons || []).includes(lessonNum) : x.c.category === cat)).map(x => x.i);
+  if (lessonNum) filtered.sort((a, b) => (LESSON_ORD[cards[a].hanzi] || 9999) - (LESSON_ORD[cards[b].hanzi] || 9999));
   filteredPos = 0;
   showFiltered();
 }
@@ -922,6 +1149,10 @@ cardEl.addEventListener('click', () => cardEl.classList.toggle('flipped'));
 document.getElementById('prevBtn').addEventListener('click', () => goTo(-1));
 document.getElementById('nextBtn').addEventListener('click', () => goTo(1));
 document.getElementById('shuffleBtn').addEventListener('click', shuffleCards);
+document.getElementById('flipBtn').addEventListener('click', () => {
+  cardEl.classList.toggle('flip-mode');
+  document.getElementById('flipBtn').classList.toggle('active');
+});
 
 // Клавиатура
 document.addEventListener('keydown', (e) => {
