@@ -318,6 +318,17 @@
   .badge-cat-Вежливость   { color:#c2c9a8; border-color:rgba(194,201,168,.4); }
   .badge-cat-Действия     { color:#d2b285; border-color:rgba(210,178,133,.4); }
   .badge-cat-Грамматика   { color:#a9a49b; border-color:rgba(169,164,155,.4); }
+.badge-cat-Урок-1 { color:#c94a52; border-color:rgba(201,74,82,.4); }
+.badge-cat-Урок-2 { color:#d4af5a; border-color:rgba(212,175,90,.4); }
+.badge-cat-Урок-3 { color:#9db8d2; border-color:rgba(157,184,210,.4); }
+.badge-cat-Урок-4 { color:#b9bfa0; border-color:rgba(185,191,160,.4); }
+.badge-cat-Урок-5 { color:#e0a3a3; border-color:rgba(224,163,163,.4); }
+.badge-cat-Урок-6 { color:#cc8f9e; border-color:rgba(204,143,158,.4); }
+.badge-cat-Урок-7 { color:#9ec4c9; border-color:rgba(158,196,201,.4); }
+.badge-cat-Урок-8 { color:#d8a468; border-color:rgba(216,164,104,.4); }
+.badge-cat-Урок-9 { color:#a8bd9a; border-color:rgba(168,189,154,.4); }
+.badge-cat-Урок-10 { color:#bfa3c9; border-color:rgba(191,163,201,.4); }
+.badge-cat-Урок-11 { color:#c2c9a8; border-color:rgba(194,201,168,.4); }
 
   /* ===== Нижняя панель: тёмное дерево ===== */
   .bottom-panel {
@@ -768,6 +779,45 @@ const cards = [
   { hanzi: '昨天', pinyin: 'zuótiān', translation: 'вчера', category: 'Время' },
   { hanzi: '坐', pinyin: 'zuò', translation: 'сидеть; ехать на', category: 'Действия' },
   { hanzi: '做', pinyin: 'zuò', translation: 'делать', category: 'Действия' },
+  { hanzi: '你好', pinyin: 'nǐ hǎo', translation: 'здравствуй', category: 'Урок 1' },
+  { hanzi: '您', pinyin: 'nín', translation: 'Вы (вежливо)', category: 'Урок 1' },
+  { hanzi: '你们', pinyin: 'nǐmen', translation: 'вы (мн. ч.)', category: 'Урок 1' },
+  { hanzi: '口', pinyin: 'kǒu', translation: 'сч. слово (члены семьи)', category: 'Урок 5' },
+  { hanzi: '哥哥', pinyin: 'gēge', translation: 'старший брат', category: 'Урок 5' },
+  { hanzi: '姐姐', pinyin: 'jiějie', translation: 'старшая сестра', category: 'Урок 5' },
+  { hanzi: '弟弟', pinyin: 'dìdi', translation: 'младший брат', category: 'Урок 5' },
+  { hanzi: '妹妹', pinyin: 'mèimei', translation: 'младшая сестра', category: 'Урок 5' },
+  { hanzi: '两', pinyin: 'liǎng', translation: 'два (перед сч. словом)', category: 'Урок 5' },
+  { hanzi: '今年', pinyin: 'jīnnián', translation: 'в этом году', category: 'Урок 5' },
+  { hanzi: '说', pinyin: 'shuō', translation: 'говорить', category: 'Урок 6' },
+  { hanzi: '一点儿', pinyin: 'yìdiǎnr', translation: 'немного', category: 'Урок 6' },
+  { hanzi: '觉得', pinyin: 'juéde', translation: 'думать; считать', category: 'Урок 6' },
+  { hanzi: '难', pinyin: 'nán', translation: 'трудный', category: 'Урок 6' },
+  { hanzi: '太…了', pinyin: 'tài…le', translation: 'слишком; очень', category: 'Урок 6' },
+  { hanzi: '可是', pinyin: 'kěshì', translation: 'но; однако', category: 'Урок 6' },
+  { hanzi: '汉字', pinyin: 'hànzì', translation: 'китайские иероглифы', category: 'Урок 6' },
+  { hanzi: '有意思', pinyin: 'yǒu yìsi', translation: 'интересный', category: 'Урок 6' },
+  { hanzi: '号', pinyin: 'hào', translation: 'число; дата', category: 'Урок 7' },
+  { hanzi: '生日', pinyin: 'shēngrì', translation: 'день рождения', category: 'Урок 7' },
+  { hanzi: '打算', pinyin: 'dǎsuàn', translation: 'планировать', category: 'Урок 7' },
+  { hanzi: '时间', pinyin: 'shíjiān', translation: 'время', category: 'Урок 7' },
+  { hanzi: '星期六', pinyin: 'xīngqīliù', translation: 'суббота', category: 'Урок 7' },
+  { hanzi: '要', pinyin: 'yào', translation: 'хотеть; желать', category: 'Урок 8' },
+  { hanzi: '咖啡', pinyin: 'kāfēi', translation: 'кофе', category: 'Урок 8' },
+  { hanzi: '牛奶', pinyin: 'niúnǎi', translation: 'молоко', category: 'Урок 8' },
+  { hanzi: '杯', pinyin: 'bēi', translation: 'чашка; стакан (сч. слово)', category: 'Урок 8' },
+  { hanzi: '鸡蛋', pinyin: 'jīdàn', translation: 'яйцо', category: 'Урок 8' },
+  { hanzi: '公司', pinyin: 'gōngsī', translation: 'компания', category: 'Урок 9' },
+  { hanzi: '可以', pinyin: 'kěyǐ', translation: 'можно; разрешается', category: 'Урок 10' },
+  { hanzi: '知道', pinyin: 'zhīdào', translation: 'знать', category: 'Урок 10' },
+  { hanzi: '书包', pinyin: 'shūbāo', translation: 'рюкзак', category: 'Урок 10' },
+  { hanzi: '问', pinyin: 'wèn', translation: 'спрашивать', category: 'Урок 10' },
+  { hanzi: '几点', pinyin: 'jǐ diǎn', translation: 'сколько времени', category: 'Урок 11' },
+  { hanzi: '分', pinyin: 'fēn', translation: 'минута', category: 'Урок 11' },
+  { hanzi: '半', pinyin: 'bàn', translation: 'половина', category: 'Урок 11' },
+  { hanzi: '早上', pinyin: 'zǎoshang', translation: 'утро', category: 'Урок 11' },
+  { hanzi: '晚上', pinyin: 'wǎnshang', translation: 'вечер', category: 'Урок 11' },
+  { hanzi: '吃饭', pinyin: 'chī fàn', translation: 'есть; кушать', category: 'Урок 11' },
 ];
 
 const cardEl = document.getElementById('card');
@@ -802,8 +852,8 @@ function showCard(i) {
 }
 
 // ===== Фильтры =====
-const CATS = ['Все','Числа','Люди','Еда','Транспорт и места','Время','Эмоции','Погода','Учёба','Вещи','Вежливость','Действия','Грамматика'];
-const CAT_ICONS = {'Все':'📋','Числа':'🔢','Люди':'👥','Еда':'🍜','Транспорт и места':'🚕','Время':'🕐','Эмоции':'😊','Погода':'🌤','Учёба':'📚','Вещи':'🏠','Вежливость':'🙏','Действия':'⚡','Грамматика':'🧩'};
+const CATS = ['Все','Числа','Люди','Еда','Транспорт и места','Время','Эмоции','Погода','Учёба','Вещи','Вежливость','Действия','Грамматика','Урок 1','Урок 2','Урок 3','Урок 4','Урок 5','Урок 6','Урок 7','Урок 8','Урок 9','Урок 10','Урок 11'];
+const CAT_ICONS = {'Все':'📋','Числа':'🔢','Люди':'👥','Еда':'🍜','Транспорт и места':'🚕','Время':'🕐','Эмоции':'😊','Погода':'🌤','Учёба':'📚','Вещи':'🏠','Вежливость':'🙏','Действия':'⚡','Грамматика':'🧩','Урок 1':'🀄','Урок 2':'🀄','Урок 3':'🀄','Урок 4':'🀄','Урок 5':'🀄','Урок 6':'🀄','Урок 7':'🀄','Урок 8':'🀄','Урок 9':'🀄','Урок 10':'🀄','Урок 11':'🀄'};
 
 let filtersRevealed = false;
 
