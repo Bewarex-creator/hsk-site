@@ -64,6 +64,11 @@
   .wc-back { transform:rotateY(180deg); }
   .wc-back .py { font-style:italic; color:#c4943a; font-size:1rem; }
   .wc-back .ru { font-size:1rem; color:#e9e2d5; line-height:1.3; }
+  .words-grid.reversed .wc-front { transform:rotateY(180deg); }
+  .words-grid.reversed .wc-back { transform:rotateY(0deg); }
+  .flip-btn { background:none; border:1px solid rgba(196,148,58,.4); color:#a89a83; font-family:inherit; font-size:.8rem; letter-spacing:.08em; padding:3px 10px; cursor:pointer; transition:all .3s ease; }
+  .flip-btn:hover { color:#c4943a; border-color:rgba(196,148,58,.7); }
+  .words-grid.reversed ~ .flip-btn, .flip-btn.on { color:#c4943a; border-color:rgba(196,148,58,.7); }
   .word-card.learned .wc-face { border-color:rgba(196,148,58,.75); box-shadow:inset 0 0 0 1px rgba(196,148,58,.4); }
   .word-card.learned .wc-front .hz::after { content:' ✓'; color:#c4943a; font-size:1rem; }
   .wc-learn { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); background:none; border:none; color:#8d8172; font-family:inherit; font-size:.72rem; letter-spacing:.1em; cursor:pointer; z-index:2; }
@@ -757,7 +762,7 @@ function renderLessonView(n, L){
     '</div>' +
 
     '<div class="sec" id="secWords">' +
-      '<div class="sec-head"><span class="sh-hz">生词</span><span class="sh-ru">Слова урока — нажми на карточку, чтобы увидеть перевод</span></div>' +
+      '<div class="sec-head"><span class="sh-hz">生词</span><span class="sh-ru">Слова урока</span><button class="flip-btn" id="flipBtn" type="button">Переворот</button></div>' +
       '<div class="words-grid" id="wordsGrid"></div>' +
       '<div class="words-progress">' +
         '<div class="wp-bar"><div class="wp-fill" id="wpFill"></div></div>' +
@@ -828,6 +833,11 @@ function renderLessonView(n, L){
   document.getElementById('lvBack').addEventListener('click', backToPath);
 
   renderWords(n, L);
+  const fb = document.getElementById('flipBtn');
+  fb.addEventListener('click', () => {
+    fb.classList.toggle('on');
+    document.getElementById('wordsGrid').classList.toggle('reversed');
+  });
   if (allLearned) {
     document.getElementById('qgBtn').addEventListener('click', () => startQuiz(n, L));
   }
